@@ -1,6 +1,7 @@
 """
 Inkrementelles Lernen mit variabler Bet Size.
-✅ FIX: Kelly Criterion + Confidence-Based Scaling implementiert
+✅ Model Ensemble Support
+✅ Kelly Criterion + Confidence-Based Scaling
 """
 
 import sys
@@ -18,23 +19,24 @@ from stable_baselines3 import DQN
 from core.betting_env import BettingEnvOptimized
 
 
-"""
-Inkrementelles Lernen mit variabler Bet Size.
-✅ NEU: Model Ensemble Support
-"""
-
-# ... (Imports wie vorher) ...
-
 class IncrementalLearner:
     """Verwaltet inkrementelle Updates + Model Ensemble."""
     
     def __init__(self, model, global_model, ensemble_config, config, tracker, file_logger=None):
         """
-        ✅ NEU: global_model + ensemble_config Parameter
+        Initialize IncrementalLearner.
+        
+        Args:
+            model: Fine-tuned DQN model
+            global_model: Global pretrained model (for ensemble)
+            ensemble_config: Dict with ensemble settings
+            config: Full config dict
+            tracker: EvaluationTracker instance
+            file_logger: Logger instance
         """
-        self.model = model  # Fine-tuned model
-        self.global_model = global_model  # ✅ NEU: Global model
-        self.ensemble_config = ensemble_config  # ✅ NEU
+        self.model = model
+        self.global_model = global_model
+        self.ensemble_config = ensemble_config
         self.config = config
         self.tracker = tracker
         self.file_logger = file_logger or logging.getLogger('training')
@@ -44,7 +46,7 @@ class IncrementalLearner:
         
         self.model.learning_rate = self.incremental_lr
         
-        # ✅ NEU: Ensemble Weights
+        # Ensemble Weights
         self.use_ensemble = ensemble_config.get("enabled", False) and global_model is not None
         self.global_weight = ensemble_config.get("global_weight", 0.5)
         self.finetune_weight = ensemble_config.get("finetune_weight", 0.5)
@@ -61,10 +63,16 @@ class IncrementalLearner:
     def predict_gameday(self, gameday_data):
         """
         Vorhersagen für gesamten Spieltag.
-        ✅ NEU: Mit Ensemble Support
+        
+        Args:
+            gameday_data: DataFrame mit Spielen des Spieltags
+            
+        Returns:
+            list: Predictions mit action, teams, actual results
         """
         predictions = []
         
+        # Create temporary environment
         temp_env = BettingEnvOptimized(
             gameday_data,
             use_betting_odds=self.config["environment"]["use_betting_odds"],
@@ -86,7 +94,7 @@ class IncrementalLearner:
             temp_env.current_step = idx
             obs = temp_env._get_obs()
             
-            # ✅ NEU: Ensemble Prediction
+            # Ensemble or single model prediction
             if self.use_ensemble:
                 action = self._ensemble_predict(obs)
             else:
@@ -108,7 +116,7 @@ class IncrementalLearner:
     
     def _ensemble_predict(self, obs):
         """
-        ✅ NEU: Kombiniert Q-Values von Global + Finetune Model
+        Kombiniert Q-Values von Global + Finetune Model.
         
         Args:
             obs: Observation array
@@ -124,7 +132,7 @@ class IncrementalLearner:
         q_finetune = self.model.policy.q_net(obs_tensor)[0].detach().cpu().numpy()
         q_global = self.global_model.policy.q_net(obs_tensor)[0].detach().cpu().numpy()
         
-        # ✅ Weighted Ensemble
+        # Weighted Ensemble
         q_combined = (
             self.global_weight * q_global + 
             self.finetune_weight * q_finetune
@@ -135,10 +143,17 @@ class IncrementalLearner:
         
         return action
     
-    # ... (Rest der Methoden wie vorher) ...
-    
     def evaluate_predictions(self, predictions, gameday_data):
-        """✅ Evaluiere Vorhersagen mit VARIABLER BET SIZE."""
+        """
+        Evaluiere Vorhersagen mit VARIABLER BET SIZE.
+        
+        Args:
+            predictions: Liste von Prediction-Dicts
+            gameday_data: DataFrame mit Spieldaten
+            
+        Returns:
+            dict: Evaluation metrics
+        """
         action_names = ["No Bet", "Home", "Away", "Over", "Under"]
         
         total_bets = 0
@@ -146,7 +161,7 @@ class IncrementalLearner:
         total_profit = 0.0
         total_invested = 0.0
         
-        # ✅ Config-Parameter laden
+        # Config-Parameter
         base_bet = self.config["environment"]["bet_amount"]
         max_bet = self.config["environment"]["max_bet_amount"]
         use_kelly = self.config["environment"].get("use_kelly_criterion", True)
@@ -160,7 +175,7 @@ class IncrementalLearner:
             
             row = gameday_data.iloc[pred['match_idx']]
             
-            # ✅ HOLE QUOTE UND PROBABILITIES
+            # Get quote and probability
             if action == 1:
                 quote = self._safe_float(row.get('MaxQuote_H', np.nan))
                 prob = self._safe_float(row.get('ImpProb_H', 0.33))
@@ -181,7 +196,7 @@ class IncrementalLearner:
             if np.isnan(quote) or quote < 1.01:
                 continue
             
-            # ✅ BERECHNE VARIABLE BET SIZE
+            # Calculate variable bet size
             bet_size = self._calculate_bet_size(
                 action, quote, prob, row,
                 base_bet, max_bet, use_kelly, kelly_fraction
@@ -190,7 +205,7 @@ class IncrementalLearner:
             total_bets += 1
             total_invested += bet_size
             
-            # Evaluiere Wette
+            # Evaluate bet
             ftr = pred['actual_ftr']
             total_goals = pred['actual_fthg'] + pred['actual_ftag']
             
@@ -202,6 +217,8 @@ class IncrementalLearner:
                 won = (total_goals > 2.5)
             elif action == 4:
                 won = (total_goals <= 2.5)
+            else:
+                won = False
             
             if won:
                 profit = (quote - 1.0) * bet_size
@@ -211,7 +228,7 @@ class IncrementalLearner:
             
             total_profit += profit
             
-            # ✅ ENHANCED LOGGING
+            # Log
             self.file_logger.info(
                 f"   {pred['home_team']:20} - {pred['away_team']:20} | "
                 f"Action: {action_names[action]:7} | "
@@ -236,24 +253,36 @@ class IncrementalLearner:
         }
     
     def _calculate_bet_size(self, action, quote, prob, row, base_bet, max_bet, use_kelly, kelly_fraction):
-        """✅ Berechnet variable Bet Size basierend auf Kelly + Confidence."""
+        """
+        Berechnet variable Bet Size basierend auf Kelly + Confidence.
         
-        # KELLY CRITERION (wenn aktiviert und profitable)
+        Args:
+            action: Bet action (1-4)
+            quote: Betting odds
+            prob: Win probability
+            row: Game data row
+            base_bet: Base bet amount
+            max_bet: Maximum bet amount
+            use_kelly: Use Kelly criterion
+            kelly_fraction: Kelly fraction (0-1)
+            
+        Returns:
+            float: Bet size in Euro
+        """
+        # KELLY CRITERION (if enabled and profitable)
         if use_kelly and prob > 0.5 and quote > 1.0:
             b = quote - 1  # Net odds
             q = 1 - prob
             
             # Kelly Formula: f* = (bp - q) / b
             kelly_value = (b * prob - q) / b
-            kelly_value = max(0, kelly_value)  # No negative bets
+            kelly_value = max(0, kelly_value)
             
             # Fractional Kelly (safer)
             kelly_value *= kelly_fraction
             
-            # Bet Size = Base + Kelly Bonus (bis zu 3x Base)
+            # Bet Size = Base + Kelly Bonus (up to 3x Base)
             bet_size = base_bet * (1 + kelly_value * 3)
-            
-            # Cap bei Maximum
             bet_size = min(bet_size, max_bet)
         
         else:
@@ -272,7 +301,7 @@ class IncrementalLearner:
             bet_size = base_bet * multiplier
             bet_size = min(bet_size, max_bet)
         
-        # ✅ VALUE BONUS (basierend auf Edge)
+        # VALUE BONUS (based on edge)
         if action in [1, 2]:
             value = self._safe_float(row.get(f'Value_{"Home" if action == 1 else "Away"}', 0))
             if value > 0.08:
@@ -283,7 +312,18 @@ class IncrementalLearner:
         return round(bet_size, 2)
     
     def evaluate_and_track(self, predictions, gameday_data, gameday, tracker):
-        """Evaluiere UND logge."""
+        """
+        Evaluiere UND logge.
+        
+        Args:
+            predictions: List of predictions
+            gameday_data: DataFrame
+            gameday: Gameday number
+            tracker: EvaluationTracker instance
+            
+        Returns:
+            dict: Evaluation results
+        """
         results = self.evaluate_predictions(predictions, gameday_data)
         
         tracker.log_gameday(
@@ -296,7 +336,12 @@ class IncrementalLearner:
         return results
     
     def incremental_update(self, cumulative_data):
-        """Update Modell."""
+        """
+        Update model with new data.
+        
+        Args:
+            cumulative_data: DataFrame with cumulative training data
+        """
         self.file_logger.info(f"\n🔄 Inkrementelles Update...")
         self.file_logger.info(f"   Training auf {len(cumulative_data)} Spiele")
         
@@ -329,6 +374,7 @@ class IncrementalLearner:
     
     @staticmethod
     def _safe_float(x):
+        """Convert to float safely."""
         try:
             val = float(x)
             return val if not (np.isnan(val) or np.isinf(val)) else np.nan

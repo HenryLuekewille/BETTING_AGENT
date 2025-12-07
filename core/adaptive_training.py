@@ -1,6 +1,7 @@
 """
 Adaptive RL Training System
 ✅ Mit korrektem Logging in Datei
+✅ Model Ensemble Support
 """
 
 import os
@@ -155,6 +156,9 @@ class AdaptiveTrainingSystem:
         
         self._load_data()
         self.tracker = EvaluationTracker(self.config["paths"]["results_dir"])
+        
+        # Store global model for ensemble
+        self.global_model = None
     
     def _setup_paths(self):
         """Erstelle alle benötigten Verzeichnisse."""
@@ -221,6 +225,7 @@ class AdaptiveTrainingSystem:
             use_betting_odds=env_cfg["use_betting_odds"],
             confidence_threshold=env_cfg["confidence_threshold"],
             bet_amount=env_cfg["bet_amount"],
+            max_bet_amount=env_cfg.get("max_bet_amount", 30.0),
             min_gameday=env_cfg.get("min_gameday", 4),
             apply_gameday_filter=False,
             reward_shaping=env_cfg.get("reward_shaping", "conservative"),
@@ -229,6 +234,7 @@ class AdaptiveTrainingSystem:
             min_edge_required=env_cfg.get("min_edge_required", 0.05),
             max_bet_rate=env_cfg.get("max_bet_rate", 0.30),
             use_kelly_criterion=env_cfg.get("use_kelly_criterion", True),
+            kelly_fraction=env_cfg.get("kelly_fraction", 0.25),
         )
     
     def phase1_global_training(self):
@@ -265,7 +271,6 @@ class AdaptiveTrainingSystem:
             name_prefix="global"
         )
         
-        # ✅ Pass file_logger
         walkforward_cb = WalkForwardCallback(
             check_freq=10000, 
             file_logger=self.file_logger
@@ -283,6 +288,9 @@ class AdaptiveTrainingSystem:
         model_path = Path(self.config["paths"]["models_dir"]) / f"global_model_{self.target_season}.zip"
         model.save(str(model_path))
         self.file_logger.info(f"\n💾 Global Model gespeichert: {model_path}\n")
+        
+        # ✅ Store global model for ensemble
+        self.global_model = model
         
         return model
     
@@ -325,8 +333,31 @@ class AdaptiveTrainingSystem:
             self.file_logger.info("⚠️  Inkrementelles Lernen deaktiviert\n")
             return self._deployment_without_learning(model)
         
+        # ✅ Check if model ensemble is configured
+        ensemble_config = self.config["training"].get("model_ensemble", {})
+        
+        # ✅ If ensemble enabled and we have global_model
+        global_model = None
+        if ensemble_config.get("enabled", False):
+            if self.global_model is not None:
+                global_model = self.global_model
+                self.file_logger.info(f"✅ Global Model für Ensemble geladen (aus Phase 1)\n")
+            else:
+                # Try to load from disk
+                model_path = Path(self.config["paths"]["models_dir"]) / f"global_model_{self.target_season}.zip"
+                if model_path.exists():
+                    global_model = DQN.load(str(model_path))
+                    self.file_logger.info(f"✅ Global Model für Ensemble geladen: {model_path}\n")
+                else:
+                    self.file_logger.warning(f"⚠️  Global Model nicht gefunden: {model_path}")
+                    self.file_logger.warning(f"   Ensemble wird deaktiviert.\n")
+                    ensemble_config["enabled"] = False
+        
+        # ✅ Create IncrementalLearner with correct parameters
         learner = IncrementalLearner(
             model=model,
+            global_model=global_model,
+            ensemble_config=ensemble_config,
             config=self.config,
             tracker=self.tracker,
             file_logger=self.file_logger

@@ -1,4 +1,7 @@
-
+# =====================================================================
+# META COMBINED PARAMETER SEARCH CONFIGURATION
+# Version: 2.0 - Extended with Fine-Tune Timing & Model Ensembles
+# =====================================================================
 
 meta_testing:
   name: "Meta Combined Parameter Search - Extended"
@@ -76,10 +79,10 @@ search_space:
   no_bet_multipliers: [0.3, 0.5, 0.7, 0.9]
   draw_penalties: [1.0, 1.2, 1.5, 2.0]
   
-  # ✅ NEU: Fine-Tune Gamedays
+  # Fine-Tune Gamedays
   fine_tune_gamedays_options: [4, 8, 12, 16]
   
-  # ✅ NEU: Model Ensemble Weights
+  # Model Ensemble Weights
   model_ensemble_weights:
     - global: 1.0
       finetune: 0.0
@@ -125,11 +128,7 @@ modes:
     max_bet_rates: [0.30, 0.40]
     use_kelly_options: [true, false]
     confidence_scaling_modes: ["none", "linear"]
-    
-    # ✅ NEU: Fine-Tune
     fine_tune_gamedays_options: [8, 12]
-    
-    # ✅ NEU: Model Weights (nur 3 Optionen)
     model_ensemble_weights:
       - global: 1.0
         finetune: 0.0
@@ -147,11 +146,7 @@ modes:
     min_edge_values: [0.00, 0.02, 0.05]
     max_bet_rates: [0.30, 0.40]
     confidence_scaling_modes: ["none", "linear", "quadratic"]
-    
-    # ✅ NEU: Fine-Tune (3 Optionen)
     fine_tune_gamedays_options: [4, 8, 12]
-    
-    # ✅ NEU: Model Weights (5 Optionen)
     model_ensemble_weights:
       - global: 1.0
         finetune: 0.0
@@ -171,7 +166,6 @@ modes:
     
   comprehensive:
     max_combinations: null  # Alle Kombinationen
-    # ✅ Nutzt alle Werte aus search_space (inkl. alle 9 Model Weights)
 
 # =====================================================================
 # EVALUATION CRITERIA
@@ -183,11 +177,10 @@ evaluation:
     - "winrate"
     - "max_drawdown"
     - "total_bets"
-    - "roi_per_gameday"  # ✅ NEU
+    - "roi_per_gameday"
   
-  # Robustness Check
   min_seeds_for_robustness: 3
-  max_cv_for_stability: 0.5  # Coefficient of Variation
+  max_cv_for_stability: 0.5
 
 # =====================================================================
 # OUTPUT SETTINGS
@@ -197,8 +190,6 @@ output:
   save_intermediate_results: true
   create_comparison_plots: true
   generate_report: true
-  
-  # ✅ NEU: Spezielle Plots
   special_plots:
     - "fine_tune_gamedays_vs_roi"
     - "model_weights_heatmap"

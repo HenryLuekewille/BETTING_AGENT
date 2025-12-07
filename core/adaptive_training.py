@@ -2,6 +2,7 @@
 Adaptive RL Training System
 ✅ Mit korrektem Logging in Datei
 ✅ Model Ensemble Support
+✅ FIX: Robuste Handhabung von None-Werten
 """
 
 import os
@@ -201,7 +202,23 @@ class AdaptiveTrainingSystem:
         self.target_season = cfg["target_season"]
         self.target_data = df[df["Season"] == self.target_season].reset_index(drop=True)
         
-        ft_gamedays = cfg["fine_tune_gamedays"]
+        # ✅ FIX: Robuste Handhabung von fine_tune_gamedays
+        ft_gamedays = cfg.get("fine_tune_gamedays")
+        
+        # Handle None, 0, or missing values
+        if ft_gamedays is None or ft_gamedays == 0:
+            ft_gamedays = 8  # Default value
+            self.file_logger.warning(
+                f"⚠️  fine_tune_gamedays nicht gesetzt oder 0, nutze default: {ft_gamedays}"
+            )
+        
+        # Validate range
+        if not (1 <= ft_gamedays <= 33):
+            self.file_logger.warning(
+                f"⚠️  fine_tune_gamedays={ft_gamedays} außerhalb Bereich 1-33, nutze 8"
+            )
+            ft_gamedays = 8
+        
         self.finetune_data = self.target_data[
             self.target_data["Gameday"] <= ft_gamedays
         ].reset_index(drop=True)
@@ -209,6 +226,17 @@ class AdaptiveTrainingSystem:
         self.deploy_data = self.target_data[
             self.target_data["Gameday"] > ft_gamedays
         ].reset_index(drop=True)
+        
+        # Validate splits
+        if len(self.finetune_data) == 0:
+            raise ValueError(
+                f"❌ Keine Daten für Fine-Tuning (Gameday <= {ft_gamedays})!"
+            )
+        
+        if len(self.deploy_data) == 0:
+            raise ValueError(
+                f"❌ Keine Daten für Deployment (Gameday > {ft_gamedays})!"
+            )
         
         msg = f"\n📊 Daten-Split:\n"
         msg += f"   Global Training:  {len(self.global_data):>6,} Spiele ({global_start}-{global_end})\n"
@@ -220,11 +248,12 @@ class AdaptiveTrainingSystem:
     def _create_env(self, data, name="env"):
         """Erstelle Betting Environment."""
         env_cfg = self.config["environment"]
+        
         return BettingEnvOptimized(
             data,
-            use_betting_odds=env_cfg["use_betting_odds"],
-            confidence_threshold=env_cfg["confidence_threshold"],
-            bet_amount=env_cfg["bet_amount"],
+            use_betting_odds=env_cfg.get("use_betting_odds", True),
+            confidence_threshold=env_cfg.get("confidence_threshold", 0.60),
+            bet_amount=env_cfg.get("bet_amount", 10.0),
             max_bet_amount=env_cfg.get("max_bet_amount", 30.0),
             min_gameday=env_cfg.get("min_gameday", 4),
             apply_gameday_filter=False,
@@ -235,6 +264,7 @@ class AdaptiveTrainingSystem:
             max_bet_rate=env_cfg.get("max_bet_rate", 0.30),
             use_kelly_criterion=env_cfg.get("use_kelly_criterion", True),
             kelly_fraction=env_cfg.get("kelly_fraction", 0.25),
+            confidence_scaling_mode=env_cfg.get("confidence_scaling_mode", "none"),
         )
     
     def phase1_global_training(self):
@@ -250,17 +280,17 @@ class AdaptiveTrainingSystem:
         model = DQN(
             "MlpPolicy",
             vec_env,
-            learning_rate=dqn_cfg["learning_rate"],
-            buffer_size=dqn_cfg["buffer_size"],
-            learning_starts=dqn_cfg["learning_starts"],
-            batch_size=dqn_cfg["batch_size"],
-            gamma=dqn_cfg["gamma"],
-            tau=dqn_cfg["tau"],
-            exploration_fraction=dqn_cfg["exploration_fraction"],
-            exploration_initial_eps=dqn_cfg["exploration_initial_eps"],
-            exploration_final_eps=dqn_cfg["exploration_final_eps"],
-            target_update_interval=dqn_cfg["target_update_interval"],
-            policy_kwargs=self.config["model"]["policy_kwargs"],
+            learning_rate=dqn_cfg.get("learning_rate", 0.0001),
+            buffer_size=dqn_cfg.get("buffer_size", 100000),
+            learning_starts=dqn_cfg.get("learning_starts", 5000),
+            batch_size=dqn_cfg.get("batch_size", 64),
+            gamma=dqn_cfg.get("gamma", 0.95),
+            tau=dqn_cfg.get("tau", 1.0),
+            exploration_fraction=dqn_cfg.get("exploration_fraction", 0.3),
+            exploration_initial_eps=dqn_cfg.get("exploration_initial_eps", 1.0),
+            exploration_final_eps=dqn_cfg.get("exploration_final_eps", 0.02),
+            target_update_interval=dqn_cfg.get("target_update_interval", 500),
+            policy_kwargs=self.config["model"].get("policy_kwargs", {"net_arch": [256, 256, 128]}),
             verbose=0,
             device="auto",
         )
@@ -276,7 +306,7 @@ class AdaptiveTrainingSystem:
             file_logger=self.file_logger
         )
         
-        timesteps = self.config["training"]["global_timesteps"]
+        timesteps = self.config["training"].get("global_timesteps", 1000000)
         self.file_logger.info(f"🚀 Starte Global Training ({timesteps:,} steps)...\n")
         
         model.learn(
@@ -296,17 +326,19 @@ class AdaptiveTrainingSystem:
     
     def phase2_finetuning(self, base_model):
         """Phase 2: Fine-Tuning."""
+        ft_gamedays = self.config["training"].get("fine_tune_gamedays", 8)
+        
         self.file_logger.info("\n" + "="*80)
-        self.file_logger.info(f"🎯 PHASE 2: FINE-TUNING (Spieltag 1-{self.config['training']['fine_tune_gamedays']})")
+        self.file_logger.info(f"🎯 PHASE 2: FINE-TUNING (Spieltag 1-{ft_gamedays})")
         self.file_logger.info("="*80 + "\n")
         
         env = self._create_env(self.finetune_data, "finetune")
         vec_env = DummyVecEnv([lambda: env])
         
         base_model.set_env(vec_env)
-        base_model.learning_rate = self.config["model"]["dqn"]["learning_rate_finetune"]
+        base_model.learning_rate = self.config["model"]["dqn"].get("learning_rate_finetune", 0.00001)
         
-        timesteps = self.config["training"]["finetune_timesteps"]
+        timesteps = self.config["training"].get("finetune_timesteps", 100000)
         
         self.file_logger.info(f"🔧 Fine-Tuning ({timesteps:,} steps)...")
         self.file_logger.info(f"   Learning Rate: {base_model.learning_rate}\n")
@@ -329,7 +361,7 @@ class AdaptiveTrainingSystem:
         self.file_logger.info("🚀 PHASE 3: INCREMENTAL DEPLOYMENT")
         self.file_logger.info("="*80 + "\n")
         
-        if not self.config["training"]["incremental_learning"]:
+        if not self.config["training"].get("incremental_learning", True):
             self.file_logger.info("⚠️  Inkrementelles Lernen deaktiviert\n")
             return self._deployment_without_learning(model)
         

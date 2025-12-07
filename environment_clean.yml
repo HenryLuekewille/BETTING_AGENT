@@ -1,0 +1,32 @@
+name: betting_agent
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+  - python=3.10
+  - flask=3.1.0
+  - flask-cors
+  - pandas=2.3.1
+  - numpy=1.26.4
+  - matplotlib=3.10.0
+  - seaborn=0.13.2
+  - scikit-learn=1.7.1
+  - scipy=1.15.3
+  - pyyaml=6.0.2
+  - tqdm
+  - xgboost=3.1.2
+  - pip
+  - pip:
+      - torch==2.2.2
+      - stable-baselines3==2.4.1
+      - gymnasium==1.0.0
+      - optuna==4.6.0
+      - optuna-dashboard==0.20.0
+      - colorlog==6.10.1
+      - alembic==1.17.2
+      - sqlalchemy==2.0.44
+      - sympy==1.14.0
+      - filelock==3.20.0
+      - networkx==3.4.2
+      - playwright==1.56.0
+      - pyee==13.0.0

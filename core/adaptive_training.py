@@ -34,16 +34,23 @@ from core.evaluation_tracker import EvaluationTracker
 
 # ✅ Logger Setup
 def setup_logger(log_file):
-    """Richtet Logging für Konsole + Datei ein."""
+    """
+    Richtet Logging für Konsole + Datei ein.
+    ✅ FIX: Verhindert doppelte Ausgaben
+    """
     
-    # Root Logger
+    # Get or create logger
     logger = logging.getLogger('training')
     logger.setLevel(logging.INFO)
     
-    # Remove existing handlers
-    logger.handlers = []
+    # ✅ Clear existing handlers to prevent duplicates
+    if logger.hasHandlers():
+        logger.handlers.clear()
     
-    # Console Handler
+    # ✅ Prevent propagation to root logger
+    logger.propagate = False
+    
+    # Console Handler (stdout)
     console_handler = logging.StreamHandler(sys.stdout)
     console_handler.setLevel(logging.INFO)
     console_formatter = logging.Formatter('%(message)s')
@@ -55,6 +62,7 @@ def setup_logger(log_file):
     file_formatter = logging.Formatter('%(asctime)s - %(message)s')
     file_handler.setFormatter(file_formatter)
     
+    # Add handlers
     logger.addHandler(console_handler)
     logger.addHandler(file_handler)
     

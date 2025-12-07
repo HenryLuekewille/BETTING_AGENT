@@ -1,7 +1,4 @@
-"""
-Meta Testing Configuration - EXTENDED VERSION
-✅ Inkl. Fine-Tune Gamedays + Model Ensemble Weights
-"""
+
 
 meta_testing:
   name: "Meta Combined Parameter Search - Extended"

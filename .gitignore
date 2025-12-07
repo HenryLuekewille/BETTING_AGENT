@@ -2,14 +2,10 @@
 models/
 runs/
 
-# Optional: weitere große/sensible Dateien
-*.zip
-*.xlsx
-*.csv
+
 *.logruns/
 models/
 results/
 *.zip
-*.csv
 *.xlsx
 *.log

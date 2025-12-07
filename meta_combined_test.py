@@ -3,6 +3,9 @@ Meta-Combined Test System with YAML Integration
 ✅ Lädt Konfiguration aus meta_test_config.yaml
 ✅ Nutzt base_training_template.yaml als Basis
 ✅ Speichert alle Configs in separaten YAMLs
+✅ FIX: Kein doppeltes Logging mehr
+✅ FIX: Fine-Tune Gamedays werden korrekt getestet
+✅ FIX: Ensemble Weights werden korrekt getestet
 """
 
 import sys
@@ -69,7 +72,7 @@ class MetaTestConfig:
     
     def create_training_config(self, params: dict, season_cfg: dict, run_dir: Path):
         """
-        Erstellt vollständige Training-Config aus Template + Parametern.
+        ✅ FIX: Erstellt vollständige Training-Config mit ALLEN Parametern.
         
         Args:
             params: Parameter-Dict
@@ -79,17 +82,19 @@ class MetaTestConfig:
         Returns:
             Path: Pfad zur gespeicherten Config
         """
-        # Kopiere Template
-        config = self.base_template.copy()
+        # ✅ Deep copy to avoid reference issues
+        import copy
+        config = copy.deepcopy(self.base_template)
         
-        # Training Settings
+        # ✅ Training Settings (ALLE Parameter!)
         config["training"]["target_season"] = season_cfg["target"]
         config["training"]["global_seasons"]["start"] = season_cfg["train_start"]
         config["training"]["global_seasons"]["end"] = season_cfg["train_end"]
         config["training"]["global_timesteps"] = params["global_timesteps"]
         config["training"]["finetune_timesteps"] = params["finetune_timesteps"]
+        config["training"]["fine_tune_gamedays"] = params["fine_tune_gamedays"]  # ✅ FIX!
         
-        # Environment Settings
+        # ✅ Environment Settings
         env = config["environment"]
         env["confidence_threshold"] = params["confidence"]
         env["min_edge_required"] = params["min_edge"]
@@ -101,18 +106,33 @@ class MetaTestConfig:
         env["reward_shaping"] = params["reward_mode"]
         env["no_bet_reward_multiplier"] = params["no_bet_mult"]
         env["draw_penalty_multiplier"] = params["draw_penalty"]
-        env["confidence_scaling_mode"] = params["confidence_scaling"]  # NEU!
+        env["confidence_scaling_mode"] = params["confidence_scaling"]
         
-        # Model Settings
+        # ✅ Model Settings
         config["model"]["dqn"]["learning_rate"] = params["learning_rate"]
         
-        # Paths
+        # ✅ Model Ensemble (falls aktiviert)
+        if "ensemble_weights" in params:
+            ensemble = params["ensemble_weights"]
+            config["training"]["model_ensemble"] = {
+                "enabled": True,
+                "global_weight": ensemble["global"],
+                "finetune_weight": ensemble["finetune"],
+                "ensemble_name": ensemble["name"]
+            }
+        else:
+            # Deaktiviere Ensemble
+            config["training"]["model_ensemble"] = {
+                "enabled": False
+            }
+        
+        # ✅ Paths (relative zu run_dir)
         for key in ["models_dir", "results_dir", "logs_dir", "checkpoints_dir"]:
             sub = run_dir / key
             sub.mkdir(parents=True, exist_ok=True)
             config["paths"][key] = str(sub)
         
-        # Save Config
+        # ✅ Save Config
         cfg_path = run_dir / "config.yaml"
         with open(cfg_path, "w", encoding="utf-8") as f:
             yaml.dump(config, f, allow_unicode=True, default_flow_style=False)
@@ -123,9 +143,11 @@ class MetaTestConfig:
         """Generiert eindeutiges Label für Experiment."""
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         
+        # ✅ Include Fine-Tune Gamedays in label
         label = (
             f"S{season_cfg['target']}_"
             f"Seed{params['seed']}_"
+            f"FT{params['fine_tune_gamedays']}_"  # ✅ NEU!
             f"C{params['confidence']}_"
             f"Edge{params['min_edge']}_"
             f"Rate{params['max_bet_rate']}_"
@@ -133,6 +155,10 @@ class MetaTestConfig:
             f"{'Kelly' if params['use_kelly'] else 'Flat'}_"
             f"{params['reward_mode']}"
         )
+        
+        # ✅ Add ensemble info if present
+        if "ensemble_weights" in params:
+            label += f"_Ens-{params['ensemble_weights']['name']}"
         
         return label, timestamp
 
@@ -156,10 +182,31 @@ class MetaTestRunner:
         # ✅ Setup Log File
         self.log_file = self.result_dir / "meta_test.log"
         
-        # ✅ Setup Logger
-        self.logger = logging.getLogger(f'meta_test_{mode}')
-        self.logger.setLevel(logging.INFO)
-        self.logger.handlers = []  # Clear existing
+        # ✅ Setup Logger (NUR EINMAL!)
+        self.logger = self._setup_logger()
+        
+        self.logger.info(f"\n{'='*80}")
+        self.logger.info(f"🔬 META-TEST SYSTEM")
+        self.logger.info(f"{'='*80}")
+        self.logger.info(f"Mode: {mode}")
+        self.logger.info(f"Dataset: {self.dataset['name']}")
+        self.logger.info(f"Seasons: {len(self.dataset['season_pairs'])}")
+        self.logger.info(f"Seeds: {len(self.dataset['seeds'])}")
+        self.logger.info(f"Result Dir: {self.result_dir}")
+        self.logger.info(f"Log File: {self.log_file}\n")
+    
+    def _setup_logger(self):
+        """✅ FIX: Setup Logger NUR EINMAL (verhindert doppelte Ausgaben)."""
+        logger_name = f'meta_test_{self.mode}_{id(self)}'  # ✅ Unique name
+        logger = logging.getLogger(logger_name)
+        logger.setLevel(logging.INFO)
+        
+        # ✅ Clear existing handlers
+        if logger.hasHandlers():
+            logger.handlers.clear()
+        
+        # ✅ Prevent propagation
+        logger.propagate = False
         
         # Console Handler
         console_handler = logging.StreamHandler(sys.stdout)
@@ -173,21 +220,14 @@ class MetaTestRunner:
         file_formatter = logging.Formatter('%(asctime)s - %(message)s')
         file_handler.setFormatter(file_formatter)
         
-        self.logger.addHandler(console_handler)
-        self.logger.addHandler(file_handler)
+        logger.addHandler(console_handler)
+        logger.addHandler(file_handler)
         
-        self.logger.info(f"\n{'='*80}")
-        self.logger.info(f"🔬 META-TEST SYSTEM")
-        self.logger.info(f"{'='*80}")
-        self.logger.info(f"Mode: {mode}")
-        self.logger.info(f"Dataset: {self.dataset['name']}")
-        self.logger.info(f"Seasons: {len(self.dataset['season_pairs'])}")
-        self.logger.info(f"Seeds: {len(self.dataset['seeds'])}")
-        self.logger.info(f"Result Dir: {self.result_dir}")
-        self.logger.info(f"Log File: {self.log_file}\n")
+        return logger
     
     def create_parameter_combinations(self, max_experiments: int = None):
-        """Erstellt alle Parameter-Kombinationen."""
+        """✅ FIX: Erstellt ALLE Parameter-Kombinationen inkl. Fine-Tune Gamedays & Ensemble Weights."""
+        
         # Build parameter space
         param_space = {
             "season_pairs": self.dataset["season_pairs"],
@@ -203,40 +243,98 @@ class MetaTestRunner:
             "reward_mode": self.search_space.get("reward_modes", ["balanced"]),
             "no_bet_mult": self.search_space.get("no_bet_multipliers", [0.5]),
             "draw_penalty": self.search_space.get("draw_penalties", [1.5]),
+            
+            # ✅ FIX: ALLE Fine-Tune Gamedays Optionen
+            "fine_tune_gamedays": self.search_space.get("fine_tune_gamedays_options", [4, 8, 12, 16]),
+            
             "global_timesteps": self.search_space.get("global_timesteps_options", [1000000]),
             "finetune_timesteps": self.search_space.get("finetune_timesteps_options", [100000]),
             "learning_rate": self.search_space.get("learning_rates", [0.0001]),
         }
         
+        # ✅ FIX: Ensemble Weights als EIGENE Dimension behandeln
+        ensemble_weights_list = self.search_space.get("model_ensemble_weights", [])
+        
+        if ensemble_weights_list:
+            # ✅ Füge Ensemble Weights als Parameter hinzu
+            param_space["ensemble_weights"] = ensemble_weights_list
+            self.logger.info(f"\n✅ Ensemble Weights aktiviert: {len(ensemble_weights_list)} Konfigurationen")
+        else:
+            # ✅ Fallback: Nur "pure_finetune" (kein Ensemble)
+            param_space["ensemble_weights"] = [
+                {"global": 0.0, "finetune": 1.0, "name": "pure_finetune"}
+            ]
+            self.logger.info(f"\n⚠️  Kein Ensemble konfiguriert, nutze pure_finetune")
+        
         # Generate all combinations
-        keys = param_space.keys()
-        values = param_space.values()
+        keys = list(param_space.keys())
+        values = list(param_space.values())
         all_combinations = list(itertools.product(*values))
         
-        self.logger.info(f"📊 Suchraum-Statistik:")
+        # ✅ Extended Debug Output
+        self.logger.info(f"\n📊 Suchraum-Statistik:")
         for key, vals in param_space.items():
-            self.logger.info(f"   {key:25} {len(vals):>3} Optionen")
+            if key == "ensemble_weights":
+                # Special handling for ensemble weights
+                names = [w['name'] for w in vals]
+                self.logger.info(f"   {key:30} {len(vals):>3} Optionen: {names}")
+            elif key == "season_pairs":
+                seasons = [f"{s['train_start']}-{s['train_end']}→{s['target']}" for s in vals]
+                self.logger.info(f"   {key:30} {len(vals):>3} Optionen: {seasons}")
+            else:
+                val_preview = vals if len(vals) <= 5 else f"{vals[:3]}...+{len(vals)-3} more"
+                self.logger.info(f"   {key:30} {len(vals):>3} Optionen: {val_preview}")
         
         total = len(all_combinations)
         self.logger.info(f"\n   Total Combinations: {total:,}")
         
-        # Apply limit if specified
+        # ✅ Show example combinations
+        if total > 0:
+            first = dict(zip(keys, all_combinations[0]))
+            self.logger.info(f"\n   📝 Beispiel-Kombination #1:")
+            self.logger.info(f"      Fine-Tune GDs:  {first.get('fine_tune_gamedays')}")
+            self.logger.info(f"      Ensemble:       {first.get('ensemble_weights', {}).get('name', 'N/A')}")
+            self.logger.info(f"      Confidence:     {first.get('confidence')}")
+            self.logger.info(f"      Min Edge:       {first.get('min_edge')}")
+            self.logger.info(f"      Seed:           {first.get('seed')}")
+            
+            if total > 1:
+                last = dict(zip(keys, all_combinations[-1]))
+                self.logger.info(f"\n   📝 Beispiel-Kombination #{total}:")
+                self.logger.info(f"      Fine-Tune GDs:  {last.get('fine_tune_gamedays')}")
+                self.logger.info(f"      Ensemble:       {last.get('ensemble_weights', {}).get('name', 'N/A')}")
+                self.logger.info(f"      Confidence:     {last.get('confidence')}")
+                self.logger.info(f"      Seed:           {last.get('seed')}")
+        
+        # Apply limit
         if max_experiments and total > max_experiments:
             self.logger.info(f"\n⚡ Sampling {max_experiments} aus {total:,} Kombinationen")
             all_combinations = random.sample(all_combinations, max_experiments)
         
-        # Convert to list of dicts
+        # Convert to dicts
         experiments = []
         for combo in all_combinations:
             param_dict = dict(zip(keys, combo))
             experiments.append(param_dict)
         
+        # ✅ Verify: Count unique values
+        unique_ft_gds = sorted(set(exp['fine_tune_gamedays'] for exp in experiments))
+        unique_ensembles = sorted(set(exp['ensemble_weights']['name'] for exp in experiments))
+        unique_confs = sorted(set(exp['confidence'] for exp in experiments))
+        unique_seeds = sorted(set(exp['seed'] for exp in experiments))
+        
+        self.logger.info(f"\n   ✅ Verification - Unique Values in Experiments:")
+        self.logger.info(f"      Fine-Tune GDs tested:  {unique_ft_gds}")
+        self.logger.info(f"      Ensembles tested:      {unique_ensembles}")
+        self.logger.info(f"      Confidences tested:    {unique_confs}")
+        self.logger.info(f"      Seeds tested:          {unique_seeds}")
+        self.logger.info(f"\n   📊 Total Experiments:      {len(experiments):,}")
+        
         return experiments
     
     def run_experiment(self, experiment_id: int, params: dict):
         """
-        Führt ein einzelnes Experiment aus.
-        ✅ Mit Live-Log-Output
+        ✅ FIX: Führt ein einzelnes Experiment aus mit korrekten Parametern.
         
         Args:
             experiment_id: Experiment-Nummer
@@ -253,10 +351,17 @@ class MetaTestRunner:
         self.logger.info(f"{'='*80}")
         self.logger.info(f"Season: {season_cfg['target']}")
         self.logger.info(f"Seed: {params['seed']}")
+        self.logger.info(f"Fine-Tune Gamedays: {params['fine_tune_gamedays']}")  # ✅ NEU!
         self.logger.info(f"Confidence: {params['confidence']}")
         self.logger.info(f"Scaling: {params['confidence_scaling']}")
         self.logger.info(f"Min Edge: {params['min_edge']}")
         self.logger.info(f"Max Bet Rate: {params['max_bet_rate']}")
+        
+        # ✅ Log ensemble if present
+        if "ensemble_weights" in params:
+            ens = params["ensemble_weights"]
+            self.logger.info(f"Ensemble: {ens['name']} (G:{ens['global']}, F:{ens['finetune']})")
+        
         self.logger.info("")
         
         # Generate label
@@ -266,7 +371,7 @@ class MetaTestRunner:
         run_dir = self.result_dir / f"run_{label}"
         run_dir.mkdir(parents=True, exist_ok=True)
         
-        # Create config
+        # ✅ Create config (mit allen Parametern!)
         cfg_path = self.config.create_training_config(params, season_cfg, run_dir)
         
         # Set seed
@@ -300,8 +405,7 @@ class MetaTestRunner:
     
     def _run_training(self, cfg_path: Path, label: str, timeout: int = 7200):
         """
-        Führt Training aus mit LIVE-LOG-OUTPUT.
-        ✅ FIX: Logs werden direkt gestreamt
+        ✅ FIX: Führt Training aus mit LIVE-LOG-OUTPUT (keine doppelten Logs).
         
         Args:
             cfg_path: Path zur Config-Datei
@@ -325,13 +429,14 @@ class MetaTestRunner:
             self.logger.info(f"   Log: {out_log}")
             self.logger.info("")
             
-            # ✅ FIX: LIVE-LOG-STREAMING
+            # ✅ LIVE-LOG-STREAMING (ohne doppelte Ausgaben)
             process = subprocess.Popen(
                 cmd,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT,
                 text=True,
-                bufsize=1  # Line buffered
+                bufsize=1,
+                universal_newlines=True
             )
             
             with open(out_log, 'w', encoding='utf-8') as f_out:
@@ -340,11 +445,8 @@ class MetaTestRunner:
                     f_out.write(line)
                     f_out.flush()
                     
-                    # ✅ Print to console (wird von Flask erfasst)
+                    # ✅ Print to console (no logging - prevents duplicates)
                     print(line, end='', flush=True)
-                    
-                    # ✅ Log to meta log
-                    self.logger.info(line.rstrip())
             
             process.wait(timeout=timeout)
             
@@ -368,16 +470,8 @@ class MetaTestRunner:
             return False
     
     def _extract_results(self, run_dir: Path):
-        """
-        Extrahiert Ergebnisse aus Run.
-        
-        Args:
-            run_dir: Run-Verzeichnis
-            
-        Returns:
-            dict: Ergebnis-Dict oder None
-        """
-        results_dir = run_dir / "results"
+        """Extrahiert Ergebnisse aus Run."""
+        results_dir = run_dir / "results_dir"
         
         if not results_dir.exists():
             self.logger.warning(f"   ⚠️  Kein results-Verzeichnis gefunden: {results_dir}")
@@ -429,12 +523,7 @@ class MetaTestRunner:
             return None
     
     def run_all_experiments(self, max_experiments: int = None):
-        """
-        Führt alle Experimente aus.
-        
-        Args:
-            max_experiments: Max. Anzahl Experimente (optional)
-        """
+        """Führt alle Experimente aus."""
         experiments = self.create_parameter_combinations(max_experiments)
         
         self.logger.info(f"\n🚀 Starte {len(experiments)} Experimente...\n")
@@ -466,25 +555,13 @@ class MetaTestRunner:
         self._create_final_report(results)
     
     def _save_results(self, results: list):
-        """
-        Speichert Zwischenergebnisse.
-        
-        Args:
-            results: Liste der Experiment-Ergebnisse
-        """
+        """Speichert Zwischenergebnisse."""
         summary_file = self.result_dir / "meta_experiment_summary.json"
         with open(summary_file, "w", encoding="utf-8") as f:
             json.dump(results, f, indent=2)
-        
-        self.logger.debug(f"   💾 Zwischenergebnisse gespeichert: {summary_file}")
     
     def _create_final_report(self, experiments: list):
-        """
-        Erstellt finalen Report.
-        
-        Args:
-            experiments: Liste aller Experimente
-        """
+        """Erstellt finalen Report mit Ensemble & Fine-Tune Analyse."""
         successful = [e for e in experiments if e.get('success') and e.get('roi') is not None]
         
         if not successful:
@@ -500,17 +577,53 @@ class MetaTestRunner:
         self.logger.info(f"   Sharpe:       {df['sharpe_ratio'].mean():>8.2f}")
         self.logger.info(f"   Max Drawdown: {df['max_drawdown'].mean():>8.2f}€")
         
-        # Best configurations
+        # ✅ Best configurations
         self.logger.info(f"\n🏆 BEST CONFIGURATIONS:")
         
         for metric in ['roi', 'sharpe_ratio', 'winrate']:
             best = df.loc[df[metric].idxmax()]
             self.logger.info(f"\n   Best {metric.upper()}:")
-            self.logger.info(f"      Value: {best[metric]:.4f}")
-            self.logger.info(f"      Confidence: {best['confidence']}")
-            self.logger.info(f"      Scaling: {best['confidence_scaling']}")
-            self.logger.info(f"      Min Edge: {best['min_edge']}")
-            self.logger.info(f"      Kelly: {best['kelly_fraction']}")
+            self.logger.info(f"      Value:        {best[metric]:.4f}")
+            self.logger.info(f"      Confidence:   {best['confidence']}")
+            self.logger.info(f"      Fine-Tune GDs: {best['fine_tune_gamedays']}")
+            
+            if 'ensemble_weights' in best:
+                ens = best['ensemble_weights']
+                if isinstance(ens, dict):
+                    self.logger.info(f"      Ensemble:     {ens.get('name', 'N/A')}")
+            
+            self.logger.info(f"      Scaling:      {best['confidence_scaling']}")
+            self.logger.info(f"      Min Edge:     {best['min_edge']}")
+            self.logger.info(f"      Kelly:        {best['kelly_fraction']}")
+        
+        # ✅ Fine-Tune Gamedays Analysis
+        self.logger.info(f"\n📊 FINE-TUNE GAMEDAYS ANALYSIS:")
+        
+        if 'fine_tune_gamedays' in df.columns:
+            ft_analysis = df.groupby('fine_tune_gamedays').agg({
+                'roi': ['mean', 'std', 'count'],
+                'winrate': 'mean',
+                'sharpe_ratio': 'mean'
+            }).round(4)
+            
+            self.logger.info(f"\n{ft_analysis.to_string()}")
+        
+        # ✅ Ensemble Weights Analysis
+        self.logger.info(f"\n🎭 ENSEMBLE WEIGHTS ANALYSIS:")
+        
+        if 'ensemble_weights' in df.columns:
+            # Extract ensemble names
+            df['ensemble_name'] = df['ensemble_weights'].apply(
+                lambda x: x.get('name', 'unknown') if isinstance(x, dict) else 'unknown'
+            )
+            
+            ensemble_analysis = df.groupby('ensemble_name').agg({
+                'roi': ['mean', 'std', 'count'],
+                'winrate': 'mean',
+                'sharpe_ratio': 'mean'
+            }).round(4)
+            
+            self.logger.info(f"\n{ensemble_analysis.to_string()}")
         
         # Save DataFrame
         csv_path = self.result_dir / f"all_results_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
@@ -523,9 +636,18 @@ class MetaTestRunner:
         with pd.ExcelWriter(excel_path, engine='openpyxl') as writer:
             df.to_excel(writer, sheet_name='All_Results', index=False)
             
+            # Top 10 for each metric
             for metric in ['roi', 'sharpe_ratio', 'winrate']:
                 top10 = df.nlargest(10, metric)
                 top10.to_excel(writer, sheet_name=f'Top10_{metric}', index=False)
+            
+            # ✅ Fine-Tune Gamedays Sheet
+            if 'fine_tune_gamedays' in df.columns:
+                ft_analysis.to_excel(writer, sheet_name='FineTune_Analysis')
+            
+            # ✅ Ensemble Analysis Sheet
+            if 'ensemble_name' in df.columns:
+                ensemble_analysis.to_excel(writer, sheet_name='Ensemble_Analysis')
         
         self.logger.info(f"💾 Excel gespeichert: {excel_path}")
         self.logger.info(f"\n{'='*80}\n")

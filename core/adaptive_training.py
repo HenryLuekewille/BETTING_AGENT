@@ -3,6 +3,7 @@ Adaptive RL Training System
 ✅ Mit korrektem Logging in Datei
 ✅ Model Ensemble Support
 ✅ FIX: Robuste Handhabung von None-Werten
+✅ FIX: WalkForwardCallback korrekt implementiert
 """
 
 import os
@@ -70,16 +71,16 @@ def setup_logger(log_file):
 
 
 class WalkForwardCallback(BaseCallback):
-    """Callback mit dynamischer Reward-Anpassung."""
+    """✅ FIX: Einfacher Callback ohne Config-Loading."""
     
-    def __init__(self, check_freq=10_000, file_logger=None, verbose=1):
-        super().__init__(verbose)
+    def __init__(self, check_freq=10000, file_logger=None):
+        super().__init__()
         self.check_freq = check_freq
+        self.file_logger = file_logger or logging.getLogger('training')
+        self.step_counter = 0
         self.episode_rewards = []
         self.current_rewards = []
         self.last_check = 0
-        self.file_logger = file_logger or logging.getLogger('training')
-        self.step_counter = 0
 
     def _on_step(self) -> bool:
         reward = self.locals.get("rewards", [0])[0]
@@ -170,11 +171,9 @@ class AdaptiveTrainingSystem:
         self.global_model = None
     
     def _setup_paths(self):
-        """Erstelle alle benötigten Verzeichnisse."""
+        """Erstelle alle benötigten Verzeichnisse (silent)."""
         for key, path in self.config["paths"].items():
-            path_obj = Path(path)
-            path_obj.mkdir(parents=True, exist_ok=True)
-            print(f"✅ {key}: {path_obj}")
+            Path(path).mkdir(parents=True, exist_ok=True)
     
     def _load_data(self):
         """Lade Daten und erstelle Splits."""

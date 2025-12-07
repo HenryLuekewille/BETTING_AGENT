@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}Training Status - Betting Agent{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2 id="status-phase">⏳ Training läuft...</h2>
+    
+    <div class="progress-container">
+        <div class="progress-bar" id="progress-bar" style="width: 0%">0%</div>
+    </div>
+    
+    <p id="status-message" class="status-message">Warte auf Updates...</p>
+    
+    <div class="stats-grid" id="stats-grid" style="display: none;">
+        <div class="stat-card">
+            <h3>Phase</h3>
+            <p id="stat-phase">-</p>
+        </div>
+        <div class="stat-card">
+            <h3>Progress</h3>
+            <p id="stat-progress">-</p>
+        </div>
+        <div class="stat-card">
+            <h3>Current Run</h3>
+            <p id="stat-run" style="font-size: 14px;">-</p>
+        </div>
+    </div>
+    
+    <div class="button-group">
+        <a href="{{ url_for('index') }}" class="btn-secondary">← Zurück</a>
+        <a href="{{ url_for('results') }}" class="btn-primary" id="results-btn" style="display: none;">
+            Ergebnisse ansehen →
+        </a>
+    </div>
+</div>
+
+<!-- ✅ NEU: Live Log -->
+<div class="card" id="log-container">
+    <h3>📜 Live Training Log</h3>
+    <div class="log-output">
+        <pre id="log-content">Warte auf Log-Ausgabe...</pre>
+    </div>
+    <div style="margin-top: 15px;">
+        <label style="display: inline-flex; align-items: center; gap: 10px; cursor: pointer;">
+            <input type="checkbox" id="auto-scroll" checked style="width: 20px; height: 20px;">
+            <span>Auto-Scroll aktiviert</span>
+        </label>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/status.js') }}"></script>
+{% endblock %}

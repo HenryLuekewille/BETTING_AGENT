@@ -1,0 +1,23 @@
+name: "Balanced (Optimized)"
+emoji: "⚖️"
+description: "Optimiert durch Parameter Search"
+
+training:
+  target_season: 2024
+  fine_tune_gamedays: 8  # ← Kann anders sein!
+  global_timesteps: 1000000
+  finetune_timesteps: 100000
+  incremental_learning: true
+
+environment:
+  confidence_threshold: 0.65
+  min_edge_required: 0.05
+  max_bet_rate: 0.40
+  bet_amount: 10.0
+  max_bet_amount: 10.0
+  use_kelly_criterion: false
+  kelly_fraction: 0.25
+  reward_shaping: "conservative"
+  no_bet_reward_multiplier: 0.5
+  draw_penalty_multiplier: 1.5
+  min_gameday: 4

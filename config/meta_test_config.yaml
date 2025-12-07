@@ -1,0 +1,208 @@
+"""
+Meta Testing Configuration - EXTENDED VERSION
+✅ Inkl. Fine-Tune Gamedays + Model Ensemble Weights
+"""
+
+meta_testing:
+  name: "Meta Combined Parameter Search - Extended"
+  version: "2.0"
+  description: "Systematische Optimierung inkl. Fine-Tune Timing & Model Ensembles"
+
+# =====================================================================
+# DATENSATZ-DEFINITIONEN
+# =====================================================================
+datasets:
+  quick_test:
+    name: "Quick Test"
+    description: "Schneller Test mit 1 Season"
+    season_pairs:
+      - train_start: 2016
+        train_end: 2022
+        target: 2023
+    seeds: [42, 1337]
+    
+  balanced_test:
+    name: "Balanced Test"
+    description: "3 Seasons für robuste Ergebnisse"
+    season_pairs:
+      - train_start: 2016
+        train_end: 2021
+        target: 2022
+      - train_start: 2016
+        train_end: 2022
+        target: 2023
+      - train_start: 2016
+        train_end: 2023
+        target: 2024
+    seeds: [42, 1337, 7]
+    
+  comprehensive_test:
+    name: "Comprehensive Test"
+    description: "Alle verfügbaren Seasons"
+    season_pairs:
+      - train_start: 2016
+        train_end: 2021
+        target: 2022
+      - train_start: 2016
+        train_end: 2022
+        target: 2023
+      - train_start: 2016
+        train_end: 2023
+        target: 2024
+      - train_start: 2017
+        train_end: 2023
+        target: 2024
+    seeds: [42, 1337, 7, 21, 99]
+
+# =====================================================================
+# PARAMETER-SUCHRAUM (FULL)
+# =====================================================================
+search_space:
+  # Betting Parameters
+  confidence_thresholds: [0.55, 0.60, 0.65, 0.70]
+  min_edge_values: [0.00, 0.02, 0.05, 0.08]
+  max_bet_rates: [0.25, 0.30, 0.40, 0.50]
+  
+  # Bet Sizing
+  base_bet_amounts: [10.0]
+  max_bet_amounts: [10, 20, 30, 50]
+  
+  # Kelly Criterion
+  use_kelly_options: [true, false]
+  kelly_fractions: [0.10, 0.15, 0.25, 0.35]
+  
+  # Confidence Scaling
+  confidence_scaling_modes: ["none", "linear", "quadratic", "threshold"]
+  
+  # Reward Shaping
+  reward_modes: ["conservative", "balanced", "aggressive"]
+  no_bet_multipliers: [0.3, 0.5, 0.7, 0.9]
+  draw_penalties: [1.0, 1.2, 1.5, 2.0]
+  
+  # ✅ NEU: Fine-Tune Gamedays
+  fine_tune_gamedays_options: [4, 8, 12, 16]
+  
+  # ✅ NEU: Model Ensemble Weights
+  model_ensemble_weights:
+    - global: 1.0
+      finetune: 0.0
+      name: "pure_global"
+    - global: 0.9
+      finetune: 0.1
+      name: "global_dominant_90"
+    - global: 0.8
+      finetune: 0.2
+      name: "global_dominant_80"
+    - global: 0.7
+      finetune: 0.3
+      name: "global_dominant_70"
+    - global: 0.5
+      finetune: 0.5
+      name: "balanced_50"
+    - global: 0.3
+      finetune: 0.7
+      name: "finetune_dominant_70"
+    - global: 0.2
+      finetune: 0.8
+      name: "finetune_dominant_80"
+    - global: 0.1
+      finetune: 0.9
+      name: "finetune_dominant_90"
+    - global: 0.0
+      finetune: 1.0
+      name: "pure_finetune"
+  
+  # Training Parameters
+  global_timesteps_options: [500000, 1000000]
+  finetune_timesteps_options: [50000, 100000]
+  learning_rates: [0.0001]
+
+# =====================================================================
+# MODE-SPEZIFISCHE EINSCHRÄNKUNGEN
+# =====================================================================
+modes:
+  quick:
+    max_combinations: 50
+    confidence_thresholds: [0.60, 0.65]
+    min_edge_values: [0.02, 0.05]
+    max_bet_rates: [0.30, 0.40]
+    use_kelly_options: [true, false]
+    confidence_scaling_modes: ["none", "linear"]
+    
+    # ✅ NEU: Fine-Tune
+    fine_tune_gamedays_options: [8, 12]
+    
+    # ✅ NEU: Model Weights (nur 3 Optionen)
+    model_ensemble_weights:
+      - global: 1.0
+        finetune: 0.0
+        name: "pure_global"
+      - global: 0.5
+        finetune: 0.5
+        name: "balanced_50"
+      - global: 0.0
+        finetune: 1.0
+        name: "pure_finetune"
+    
+  balanced:
+    max_combinations: 500
+    confidence_thresholds: [0.55, 0.60, 0.65]
+    min_edge_values: [0.00, 0.02, 0.05]
+    max_bet_rates: [0.30, 0.40]
+    confidence_scaling_modes: ["none", "linear", "quadratic"]
+    
+    # ✅ NEU: Fine-Tune (3 Optionen)
+    fine_tune_gamedays_options: [4, 8, 12]
+    
+    # ✅ NEU: Model Weights (5 Optionen)
+    model_ensemble_weights:
+      - global: 1.0
+        finetune: 0.0
+        name: "pure_global"
+      - global: 0.8
+        finetune: 0.2
+        name: "global_dominant_80"
+      - global: 0.5
+        finetune: 0.5
+        name: "balanced_50"
+      - global: 0.2
+        finetune: 0.8
+        name: "finetune_dominant_80"
+      - global: 0.0
+        finetune: 1.0
+        name: "pure_finetune"
+    
+  comprehensive:
+    max_combinations: null  # Alle Kombinationen
+    # ✅ Nutzt alle Werte aus search_space (inkl. alle 9 Model Weights)
+
+# =====================================================================
+# EVALUATION CRITERIA
+# =====================================================================
+evaluation:
+  primary_metric: "roi"
+  secondary_metrics:
+    - "sharpe_ratio"
+    - "winrate"
+    - "max_drawdown"
+    - "total_bets"
+    - "roi_per_gameday"  # ✅ NEU
+  
+  # Robustness Check
+  min_seeds_for_robustness: 3
+  max_cv_for_stability: 0.5  # Coefficient of Variation
+
+# =====================================================================
+# OUTPUT SETTINGS
+# =====================================================================
+output:
+  save_all_configs: true
+  save_intermediate_results: true
+  create_comparison_plots: true
+  generate_report: true
+  
+  # ✅ NEU: Spezielle Plots
+  special_plots:
+    - "fine_tune_gamedays_vs_roi"
+    - "model_weights_heatmap"
+    - "gameday_tradeoff_analysis"

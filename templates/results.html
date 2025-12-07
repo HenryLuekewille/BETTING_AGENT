@@ -1,0 +1,258 @@
+{% extends "base.html" %}
+
+{% block title %}Ergebnisse - Betting Agent{% endblock %}
+
+{% block content %}
+{% if runs %}
+<div class="card">
+    <h2>🗂️ Run auswählen</h2>
+    <select id="run-select" onchange="loadResults(this.value)" class="form-control">
+        {% for run in runs %}
+        {% if run.has_results %}
+        <option value="{{ run.id }}" {% if loop.first %}selected{% endif %}>
+            {{ run.timestamp[:8] }}_{{ run.timestamp[9:15] }} - Saison {{ run.season }}
+        </option>
+        {% endif %}
+        {% endfor %}
+    </select>
+</div>
+
+<div class="card" id="results-container">
+    <h2>📈 Performance-Übersicht</h2>
+    <div id="loading" class="loading-spinner">
+        <div class="spinner"></div>
+        <p>Lade Ergebnisse...</p>
+    </div>
+    
+    <div id="results-content" style="display: none;">
+        <!-- Summary Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Total ROI</h3>
+                <p id="stat-roi" class="stat-value">-</p>
+            </div>
+            <div class="stat-card">
+                <h3>Winrate</h3>
+                <p id="stat-winrate" class="stat-value">-</p>
+            </div>
+            <div class="stat-card">
+                <h3>Total Profit</h3>
+                <p id="stat-profit" class="stat-value">-</p>
+            </div>
+            <div class="stat-card">
+                <h3>Total Bets</h3>
+                <p id="stat-bets" class="stat-value">-</p>
+            </div>
+            <!-- ✅ NEU: Avg Bet Size -->
+            <div class="stat-card">
+                <h3>⭐ Ø Bet Size</h3>
+                <p id="stat-avg-bet" class="stat-value">-</p>
+            </div>
+            <div class="stat-card">
+                <h3>⭐ Max Bet</h3>
+                <p id="stat-max-bet" class="stat-value">-</p>
+            </div>
+        </div>
+
+        <!-- Chart -->
+        <div class="chart-container">
+            <canvas id="roi-chart"></canvas>
+        </div>
+
+        <!-- Gameday Table -->
+        <h3>🗓️ Spieltag-Ergebnisse</h3>
+        <div class="table-container">
+            <table id="gameday-table">
+                <thead>
+                    <tr>
+                        <th>Spieltag</th>
+                        <th>Wetten</th>
+                        <th>Wins</th>
+                        <th>Winrate</th>
+                        <th>Profit</th>
+                        <th>ROI</th>
+                        <th>Kum. ROI</th>
+                    </tr>
+                </thead>
+                <tbody id="gameday-tbody">
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Download Button -->
+        <div class="button-group">
+            <a id="download-btn" href="#" class="btn-primary" download>
+                📥 Excel Report herunterladen
+            </a>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="card">
+    <h2>📊 Ergebnisse</h2>
+    <p class="empty-state">
+        Keine Ergebnisse vorhanden. Starte zuerst ein Training!
+    </p>
+    <a href="{{ url_for('index') }}" class="btn-primary">→ Training starten</a>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_css %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let chart = null;
+
+async function loadResults(runId) {
+    document.getElementById('loading').style.display = 'block';
+    document.getElementById('results-content').style.display = 'none';
+
+    try {
+        const response = await fetch(`/api/results/${runId}`);
+        const data = await response.json();
+
+        if (data.error) {
+            alert(data.error);
+            return;
+        }
+
+        displayResults(data, runId);
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('results-content').style.display = 'block';
+    } catch (error) {
+        console.error('Error loading results:', error);
+        alert('Fehler beim Laden der Ergebnisse');
+    }
+}
+
+function displayResults(data, runId) {
+    const gamedays = data.gameday_data;
+
+    // Calculate summary stats
+    const totalBets = gamedays.reduce((sum, gd) => sum + gd.BetsPlaced, 0);
+    const totalWins = gamedays.reduce((sum, gd) => sum + gd.Wins, 0);
+    const totalProfit = gamedays.reduce((sum, gd) => sum + gd.TotalProfit, 0);
+    const totalInvested = gamedays.reduce((sum, gd) => sum + gd.TotalInvested, 0);
+    const roi = (totalProfit / totalInvested) * 100;
+    const winrate = (totalWins / totalBets) * 100;
+    
+    // ✅ NEU: Avg/Max Bet Size
+    const avgBetSize = totalInvested / totalBets;
+    const maxBet = data.max_bet_amount || 30; // Falls im Response enthalten
+
+    // Update stats
+    document.getElementById('stat-roi').textContent = `${roi.toFixed(2)}%`;
+    document.getElementById('stat-roi').className = `stat-value ${roi >= 0 ? 'positive' : 'negative'}`;
+    
+    document.getElementById('stat-winrate').textContent = `${winrate.toFixed(2)}%`;
+    document.getElementById('stat-profit').textContent = `${totalProfit.toFixed(2)}€`;
+    document.getElementById('stat-profit').className = `stat-value ${totalProfit >= 0 ? 'positive' : 'negative'}`;
+    
+    document.getElementById('stat-bets').textContent = totalBets;
+    
+    // ✅ NEU
+    document.getElementById('stat-avg-bet').textContent = `${avgBetSize.toFixed(2)}€`;
+    document.getElementById('stat-max-bet').textContent = `${maxBet.toFixed(2)}€`;
+
+    // Update table
+    const tbody = document.getElementById('gameday-tbody');
+    tbody.innerHTML = '';
+    gamedays.forEach(gd => {
+        const row = tbody.insertRow();
+        row.innerHTML = `
+            <td>${gd.Gameday}</td>
+            <td>${gd.BetsPlaced}</td>
+            <td>${gd.Wins}</td>
+            <td>${(gd.Winrate * 100).toFixed(2)}%</td>
+            <td class="${gd.TotalProfit >= 0 ? 'positive' : 'negative'}">
+                ${gd.TotalProfit.toFixed(2)}€
+            </td>
+            <td class="${gd.ROI >= 0 ? 'positive' : 'negative'}">
+                ${(gd.ROI * 100).toFixed(2)}%
+            </td>
+            <td class="${gd.CumulativeROI >= 0 ? 'positive' : 'negative'}">
+                ${(gd.CumulativeROI * 100).toFixed(2)}%
+            </td>
+        `;
+    });
+
+    // Update chart
+    updateChart(gamedays);
+
+    // Update download link
+    document.getElementById('download-btn').href = `/download/${runId}/${data.excel_file}`;
+}
+
+function updateChart(gamedays) {
+    const ctx = document.getElementById('roi-chart').getContext('2d');
+
+    if (chart) chart.destroy();
+
+    chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: gamedays.map(gd => `GD ${gd.Gameday}`),
+            datasets: [
+                {
+                    label: 'Kumulativer ROI (%)',
+                    data: gamedays.map(gd => (gd.CumulativeROI * 100).toFixed(2)),
+                    borderColor: 'rgb(75, 192, 192)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.1)',
+                    tension: 0.1,
+                    fill: true
+                },
+                {
+                    label: 'Spieltag ROI (%)',
+                    data: gamedays.map(gd => (gd.ROI * 100).toFixed(2)),
+                    borderColor: 'rgb(255, 99, 132)',
+                    backgroundColor: 'rgba(255, 99, 132, 0.1)',
+                    tension: 0.1,
+                    fill: true
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'ROI-Entwicklung über Spieltage',
+                    font: { size: 16 }
+                },
+                legend: {
+                    display: true,
+                    position: 'top'
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'ROI (%)'
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Spieltag'
+                    }
+                }
+            }
+        }
+    });
+}
+
+// Load results on page load
+window.addEventListener('load', () => {
+    const select = document.getElementById('run-select');
+    if (select && select.value) {
+        loadResults(select.value);
+    }
+});
+</script>
+{% endblock %}

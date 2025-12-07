@@ -1,0 +1,792 @@
+{% extends "base.html" %}
+
+{% block title %}Model & Features - Betting Agent{% endblock %}
+
+{% block extra_css %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+{% block content %}
+
+<!-- Hero -->
+<div class="model-info-hero">
+    <h1 style="font-size: 2.5em; margin-bottom: 15px;">🧠 Model & Features</h1>
+    <p style="font-size: 1.1em; color: var(--text-secondary);">
+        Verstehe, wie der Betting Agent arbeitet und welche Daten er nutzt.
+    </p>
+</div>
+
+<!-- Tab Navigation -->
+<div class="tab-navigation">
+    <button class="tab-btn active" onclick="switchTab('overview')">
+        📊 Übersicht
+    </button>
+    <button class="tab-btn" onclick="switchTab('guide')">
+        📖 Model Guide
+    </button>
+    <button class="tab-btn" onclick="switchTab('features')">
+        🔍 Features
+    </button>
+    <button class="tab-btn" onclick="switchTab('decision')">
+        🧠 Decision Flow
+    </button>
+</div>
+
+<!-- Tab: Übersicht -->
+<div id="tab-overview" class="tab-content active">
+    <!-- Quick Stats -->
+    <div class="quick-stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon">🎯</div>
+            <div class="stat-value">DQN</div>
+            <div class="stat-label">Algorithmus</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">🔢</div>
+            <div class="stat-value">{{ feature_count }}</div>
+            <div class="stat-label">Features</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">🧠</div>
+            <div class="stat-value">{{ params.net_arch|join('-') }}</div>
+            <div class="stat-label">Network</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">⏱️</div>
+            <div class="stat-value">{{ expected_time.total }}</div>
+            <div class="stat-label">Training Time</div>
+        </div>
+    </div>
+    
+    <!-- Current Profile -->
+    <div class="card">
+        <h2>🎯 Aktuelles Profil: {{ profile_type.name }}</h2>
+        <div class="profile-display">
+            <span style="font-size: 3em;">{{ profile_type.emoji }}</span>
+            <div>
+                <p style="color: var(--text-secondary); font-size: 1.1em;">
+                    {{ profile_type.description }}
+                </p>
+            </div>
+        </div>
+        
+        <div class="profile-params">
+            <div class="param-item">
+                <strong>Confidence Threshold:</strong>
+                <span>{{ params.confidence_threshold }}</span>
+            </div>
+            <div class="param-item">
+                <strong>Min Edge Required:</strong>
+                <span>{{ params.min_edge }}</span>
+            </div>
+            <div class="param-item">
+                <strong>Max Bet Rate:</strong>
+                <span>{{ (params.max_bet_rate * 100)|int }}%</span>
+            </div>
+            <div class="param-item">
+                <strong>Bet Range:</strong>
+                <span>{{ params.bet_amount }}€ - {{ params.max_bet_amount }}€</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Quick Links -->
+    <div class="quick-links-grid">
+        <button onclick="switchTab('guide')" class="quick-link-btn">
+            <span class="link-icon">📖</span>
+            <strong>Model Guide</strong>
+            <p>Verstehe alle Parameter im Detail</p>
+        </button>
+        <button onclick="switchTab('features')" class="quick-link-btn">
+            <span class="link-icon">🔍</span>
+            <strong>Feature Dokumentation</strong>
+            <p>{{ feature_count }} Features erklärt</p>
+        </button>
+        <button onclick="switchTab('decision')" class="quick-link-btn">
+            <span class="link-icon">🧠</span>
+            <strong>Decision Flow</strong>
+            <p>Wie Entscheidungen getroffen werden</p>
+        </button>
+    </div>
+</div>
+
+<!-- Tab: Model Guide -->
+<div id="tab-guide" class="tab-content">
+    <!-- Hero Section mit aktuellem Profil -->
+    <div class="guide-hero" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); padding: 40px; border-radius: 12px; margin-bottom: 30px; border: 2px solid var(--primary);">
+        <h1 style="font-size: 2em; margin-bottom: 10px;">🤖 Model Guide</h1>
+        <p style="font-size: 1.1em; color: var(--text-secondary); margin-top: 10px;">
+            Verstehe, wie der Betting Agent Entscheidungen trifft und wie alle Faktoren zusammenwirken
+        </p>
+        
+        <!-- Dynamisches Profil -->
+        <div style="margin-top: 30px; padding: 20px; background: rgba(37, 99, 235, 0.1); border-radius: 12px; border: 2px solid var(--primary);">
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <span style="font-size: 3em;">{{ profile_type.emoji }}</span>
+                <div>
+                    <h3 style="margin: 0; color: var(--primary-light);">
+                        Aktuelles Profil: {{ profile_type.name }}
+                    </h3>
+                    <p style="margin: 5px 0 0 0; color: var(--text-secondary);">
+                        {{ profile_type.description }}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Reference -->
+    <div class="guide-section" style="margin-bottom: 40px;">
+        <h2><span class="icon">📊</span> Model auf einen Blick</h2>
+        
+        <div class="quick-reference" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-top: 20px;">
+            <div class="quick-reference-card" style="background: var(--bg-dark); padding: 20px; border-radius: 8px; text-align: center; border: 2px solid var(--border);">
+                <div class="label" style="color: var(--text-secondary); font-size: 0.9em; margin-bottom: 10px;">Algorithmus</div>
+                <div class="metric" style="font-size: 2em; font-weight: 700; color: var(--primary-light);">DQN</div>
+                <small style="color: var(--text-muted);">Deep Q-Network</small>
+            </div>
+            
+            <div class="quick-reference-card" style="background: var(--bg-dark); padding: 20px; border-radius: 8px; text-align: center; border: 2px solid var(--border);">
+                <div class="label" style="color: var(--text-secondary); font-size: 0.9em; margin-bottom: 10px;">Features</div>
+                <div class="metric" style="font-size: 2em; font-weight: 700; color: var(--primary-light);">{{ feature_count }}</div>
+                <small style="color: var(--text-muted);">L4-optimiert</small>
+            </div>
+            
+            <div class="quick-reference-card" style="background: var(--bg-dark); padding: 20px; border-radius: 8px; text-align: center; border: 2px solid var(--border);">
+                <div class="label" style="color: var(--text-secondary); font-size: 0.9em; margin-bottom: 10px;">Network Size</div>
+                <div class="metric" style="font-size: 2em; font-weight: 700; color: var(--primary-light);">{{ params.net_arch|join('-') }}</div>
+                <small style="color: var(--text-muted);">Hidden Layers</small>
+            </div>
+            
+            <div class="quick-reference-card" style="background: var(--bg-dark); padding: 20px; border-radius: 8px; text-align: center; border: 2px solid var(--border);">
+                <div class="label" style="color: var(--text-secondary); font-size: 0.9em; margin-bottom: 10px;">Training Time</div>
+                <div class="metric" style="font-size: 2em; font-weight: 700; color: var(--primary-light);">{{ expected_time.total }}</div>
+                <small style="color: var(--text-muted);">Geschätzte Dauer</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Aktuelle Betting Konfiguration mit Dropdowns -->
+    <div class="guide-section" style="margin-bottom: 40px;">
+        <h2><span class="icon">💰</span> Aktuelle Betting Konfiguration</h2>
+        
+        <p style="margin-bottom: 25px; color: var(--text-secondary);">
+            Klicke auf einen Parameter, um die detaillierte Erklärung zu sehen.
+        </p>
+        
+        <div class="parameter-grid">
+            <!-- Confidence Threshold -->
+            <div class="parameter-card {{ 'active-param' if params.confidence_threshold != 0.60 else '' }}">
+                <div class="parameter-header">
+                    <span class="parameter-name">Confidence Threshold</span>
+                    <button class="expand-btn" onclick="toggleExplanation(this)">
+                        <span class="expand-icon">▼</span>
+                    </button>
+                </div>
+                <div class="parameter-current">
+                    {{ params.confidence_threshold }}
+                </div>
+                <p class="parameter-impact">
+                    {% if params.confidence_threshold >= 0.65 %}
+                        → Konservativ: Wenige, sichere Wetten
+                    {% elif params.confidence_threshold <= 0.58 %}
+                        → Aggressiv: Viele Wetten, höheres Risiko
+                    {% else %}
+                        → Balanced: Gute Balance
+                    {% endif %}
+                </p>
+                <span class="impact-badge impact-high">High Impact</span>
+                
+                <div class="parameter-explanation">
+                    <h4>Was ist der Confidence Threshold?</h4>
+                    <p>Der Confidence Threshold bestimmt die Mindest-Wahrscheinlichkeit, mit der das Model eine Wette platziert. Bei 0.60 bedeutet das: Das Model muss zu mindestens 60% überzeugt sein, dass die Wette gewinnt.</p>
+                    
+                    <h4>Wie funktioniert es?</h4>
+                    <ul>
+                        <li>Das Model berechnet eine Win-Probability aus Features</li>
+                        <li>Diese wird mit dem Threshold verglichen</li>
+                        <li>Nur wenn Win-Prob > Threshold wird gewettet</li>
+                    </ul>
+                    
+                    <h4>Einfluss auf Results:</h4>
+                    <ul>
+                        <li><strong>HÖHER (0.65-0.70):</strong> Weniger, aber sicherere Wetten → Höhere Winrate, niedrigere Bet Rate</li>
+                        <li><strong>NIEDRIGER (0.55-0.58):</strong> Mehr Wetten, auch unsichere → Niedrigere Winrate, höhere Bet Rate</li>
+                    </ul>
+                    
+                    <h4>Beispiel:</h4>
+                    <div class="example-box">
+                        Match: Bayern vs. Dortmund<br>
+                        Model Win-Prob (Bayern): 0.68<br>
+                        Threshold: 0.60<br>
+                        → Wette WIRD platziert (0.68 > 0.60)
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Bet Amounts -->
+            <div class="parameter-card {{ 'active-param' if params.bet_amount != 10.0 else '' }}">
+                <div class="parameter-header">
+                    <span class="parameter-name">Bet Amount Range</span>
+                    <button class="expand-btn" onclick="toggleExplanation(this)">
+                        <span class="expand-icon">▼</span>
+                    </button>
+                </div>
+                <div class="parameter-current">
+                    {{ params.bet_amount }}€ → {{ params.max_bet_amount }}€
+                </div>
+                <p class="parameter-impact">
+                    Ratio: {{ "%.1f"|format(params.max_bet_amount / params.bet_amount) }}x
+                    {% if params.max_bet_amount / params.bet_amount > 3.5 %}
+                        → Hohe Varianz möglich
+                    {% else %}
+                        → Moderate Varianz
+                    {% endif %}
+                </p>
+                <span class="impact-badge impact-high">High Impact</span>
+                
+                <div class="parameter-explanation">
+                    <h4>Variable Wetteinsätze</h4>
+                    <p>Der Agent nutzt VARIABLE Wetteinsätze zwischen einem Minimum (Base) und Maximum (Max). Die tatsächliche Bet Size wird dynamisch berechnet.</p>
+                    
+                    <h4>Wie funktioniert es?</h4>
+                    <ol>
+                        <li>Basis-Einsatz bei niedriger Confidence (z.B. 60%)</li>
+                        <li>Skalierung nach oben bei höherer Confidence</li>
+                        <li>Maximum-Cap bei sehr hoher Confidence + Value</li>
+                    </ol>
+                    
+                    <h4>Berechnung:</h4>
+                    <ul>
+                        <li>Bei 60% Confidence: Base Bet ({{ params.bet_amount }}€)</li>
+                        <li>Bei 65% Confidence: ~1.5x Base ({{ (params.bet_amount * 1.5)|round(2) }}€)</li>
+                        <li>Bei 70% Confidence: ~2.0x Base ({{ (params.bet_amount * 2)|round(2) }}€)</li>
+                        <li>Bei 75%+ Confidence: ~2.5x Base, aber max {{ params.max_bet_amount }}€</li>
+                    </ul>
+                    
+                    <h4>Zusätzliche Boni:</h4>
+                    <ul>
+                        <li><strong>Value-Bonus:</strong> +10-20% bei starkem Edge</li>
+                        <li><strong>Kelly-Bonus:</strong> Variable Skalierung nach Gewinn-Erwartung</li>
+                    </ul>
+                    
+                    <h4>Warum variabel?</h4>
+                    <ul>
+                        <li>✓ Mehr Einsatz bei sicheren Wetten</li>
+                        <li>✓ Weniger Risiko bei unsicheren Wetten</li>
+                        <li>✓ Optimale Kapital-Allokation</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Min Edge Required -->
+            <div class="parameter-card {{ 'active-param' if params.min_edge != 0.02 else '' }}">
+                <div class="parameter-header">
+                    <span class="parameter-name">Minimum Edge Required</span>
+                    <button class="expand-btn" onclick="toggleExplanation(this)">
+                        <span class="expand-icon">▼</span>
+                    </button>
+                </div>
+                <div class="parameter-current">
+                    {{ params.min_edge }}
+                </div>
+                <p class="parameter-impact">
+                    {% if params.min_edge >= 0.06 %}
+                        → Nur starke Value Bets
+                    {% elif params.min_edge <= 0.025 %}
+                        → Auch schwache Edges
+                    {% else %}
+                        → Moderate Anforderung
+                    {% endif %}
+                </p>
+                <span class="impact-badge impact-high">High Impact</span>
+                
+                <div class="parameter-explanation">
+                    <h4>Was ist Edge?</h4>
+                    <p>Der Edge ist der mathematische Vorteil, den du gegenüber dem Buchmacher hast. Er zeigt, ob eine Wette profitabel ist.</p>
+                    
+                    <div class="formula-box">
+                        Edge = Deine Win-Probability - Buchmacher Implied Probability
+                    </div>
+                    
+                    <h4>Beispiel:</h4>
+                    <div class="example-box">
+                        Match: Bayern vs. Wolfsburg<br>
+                        Model Win-Prob (Bayern): 0.72 (72%)<br>
+                        Buchmacher Quote: 1.50 → Implied Prob: 0.67 (67%)<br>
+                        <strong>Edge = 0.72 - 0.67 = 0.05 (5% Vorteil!)</strong>
+                    </div>
+                    
+                    <h4>Min Edge bestimmt:</h4>
+                    <p>Wie groß muss dein Vorteil mindestens sein, damit gewettet wird?</p>
+                    
+                    <h4>Einfluss:</h4>
+                    <ul>
+                        <li><strong>HÖHER (0.05-0.08):</strong> Nur starke Value-Bets → Weniger Wetten, aber profitabler</li>
+                        <li><strong>NIEDRIGER (0.02-0.03):</strong> Auch schwache Edges → Mehr Wetten, niedrigerer ROI</li>
+                    </ul>
+                    
+                    <h4>Faustregel:</h4>
+                    <ul>
+                        <li>0.02-0.03: Aggressiv, viele Wetten</li>
+                        <li>0.04-0.05: Balanced, solide Edges</li>
+                        <li>0.06+: Konservativ, nur Top-Wetten</li>
+                    </ul>
+                    
+                    <div class="highlight-box">
+                        ⚠️ Der Edge ist KRITISCH für langfristigen Profit!
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Max Bet Rate -->
+            <div class="parameter-card {{ 'active-param' if params.max_bet_rate != 0.30 else '' }}">
+                <div class="parameter-header">
+                    <span class="parameter-name">Max Bet Rate</span>
+                    <button class="expand-btn" onclick="toggleExplanation(this)">
+                        <span class="expand-icon">▼</span>
+                    </button>
+                </div>
+                <div class="parameter-current">
+                    {{ (params.max_bet_rate * 100)|int }}%
+                </div>
+                <p class="parameter-impact">
+                    Maximal ~{{ ((params.max_bet_rate * 306)|int) }} Wetten/Saison
+                </p>
+                <span class="impact-badge impact-medium">Medium Impact</span>
+                
+                <div class="parameter-explanation">
+                    <h4>Was ist die Bet Rate?</h4>
+                    <p>Die Bet Rate ist der Prozentsatz aller Spiele, auf die gewettet wird. Sie kontrolliert Over-Betting.</p>
+                    
+                    <h4>Wie funktioniert's?</h4>
+                    <p>Bei jedem Match wird geprüft:</p>
+                    <div class="formula-box">
+                        Aktuelle Bet Rate = Bisherige Wetten / Bisherige Matches
+                    </div>
+                    
+                    <p>Wenn Bet Rate >= Max Bet Rate:</p>
+                    <p>→ KEINE weitere Wette möglich (auch bei guter Confidence!)</p>
+                    
+                    <h4>Beispiel:</h4>
+                    <div class="example-box">
+                        Max Bet Rate: 30%<br>
+                        Nach 100 Spielen: 30 Wetten platziert<br>
+                        → Bet Rate = 30% → Limit erreicht!<br>
+                        → Match 101: KEINE Wette, auch bei 80% Confidence
+                    </div>
+                    
+                    <h4>Warum wichtig?</h4>
+                    <ul>
+                        <li>Verhindert impulsives Over-Betting</li>
+                        <li>Zwingt zu Selektion der besten Wetten</li>
+                        <li>Reduziert Exposure & Varianz</li>
+                    </ul>
+                    
+                    <h4>Typische Werte:</h4>
+                    <ul>
+                        <li><strong>20-25%:</strong> Sehr selektiv (~60-75 Wetten/Saison)</li>
+                        <li><strong>30-35%:</strong> Balanced (~90-105 Wetten/Saison)</li>
+                        <li><strong>40%+:</strong> Aggressiv (~120+ Wetten/Saison)</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Kelly Criterion -->
+            <div class="parameter-card {{ 'active-param' if params.use_kelly else '' }}">
+                <div class="parameter-header">
+                    <span class="parameter-name">Kelly Criterion</span>
+                    <button class="expand-btn" onclick="toggleExplanation(this)">
+                        <span class="expand-icon">▼</span>
+                    </button>
+                </div>
+                <div class="parameter-current">
+                    {{ 'Aktiviert' if params.use_kelly else 'Deaktiviert' }}
+                </div>
+                {% if params.use_kelly %}
+                <p class="parameter-impact">
+                    Kelly Fraction: {{ params.kelly_fraction }}<br>
+                    → Dynamische Bet Size basierend auf Edge
+                </p>
+                {% else %}
+                <p class="parameter-impact">
+                    → Fixe Multiplikatoren basierend auf Confidence
+                </p>
+                {% endif %}
+                <span class="impact-badge impact-medium">Medium Impact</span>
+                
+                <div class="parameter-explanation">
+                    <h4>Was ist das Kelly Criterion?</h4>
+                    <p>Das Kelly Criterion ist eine mathematische Formel zur optimalen Einsatz-Berechnung basierend auf deinem Edge.</p>
+                    
+                    <h4>Die Kelly-Formel:</h4>
+                    <div class="formula-box">
+                        f* = (bp - q) / b
+                    </div>
+                    
+                    <p><strong>Wobei:</strong></p>
+                    <ul>
+                        <li><strong>b</strong> = net odds (Quote - 1)</li>
+                        <li><strong>p</strong> = win probability</li>
+                        <li><strong>q</strong> = loss probability (1 - p)</li>
+                        <li><strong>f*</strong> = optimaler Anteil deines Kapitals</li>
+                    </ul>
+                    
+                    <h4>Beispiel-Rechnung:</h4>
+                    <div class="example-box">
+                        Match: Leverkusen vs. Hoffenheim<br>
+                        Win-Prob: 0.70 (70%)<br>
+                        Quote: 1.80<br>
+                        → b = 0.80, p = 0.70, q = 0.30<br>
+                        → f* = (0.80 * 0.70 - 0.30) / 0.80 = 0.325<br><br>
+                        <strong>Das bedeutet: Wette 32.5% deines Kapitals!</strong>
+                    </div>
+                    
+                    <h4>⚠️ ABER: Full Kelly ist zu aggressiv!</h4>
+                    
+                    <h4>Fractional Kelly:</h4>
+                    <p>Wir nutzen nur einen Bruchteil (z.B. 1/4 Kelly)</p>
+                    <div class="example-box">
+                        → 0.325 * 0.25 = 0.08125 (8.125%)<br><br>
+                        Bei Base Bet von 10€:<br>
+                        → Kelly-Bonus = 10€ * 3 * 0.08125 = ~2.44€<br>
+                        → <strong>Finale Bet Size = 10€ + 2.44€ = 12.44€</strong>
+                    </div>
+                    
+                    <h4>Vorteile:</h4>
+                    <ul>
+                        <li>✓ Mathematisch optimal</li>
+                        <li>✓ Nutzt starke Edges voll aus</li>
+                        <li>✓ Wächst Kapital schneller</li>
+                    </ul>
+                    
+                    <h4>Risiken:</h4>
+                    <ul>
+                        <li>✗ Kann zu hoher Varianz führen</li>
+                        <li>✗ Benötigt genaue Probability-Schätzung</li>
+                    </ul>
+                    
+                    <h4>Wenn DEAKTIVIERT:</h4>
+                    <p>→ Confidence-Based Scaling (fixe Multiplikatoren)</p>
+                </div>
+            </div>
+            
+            <!-- Reward Shaping -->
+            <div class="parameter-card">
+                <div class="parameter-header">
+                    <span class="parameter-name">Reward Shaping</span>
+                    <button class="expand-btn" onclick="toggleExplanation(this)">
+                        <span class="expand-icon">▼</span>
+                    </button>
+                </div>
+                <div class="parameter-current">
+                    {{ params.reward_shaping }}
+                </div>
+                <p class="parameter-impact">
+                    No-Bet: {{ params.no_bet_multiplier }}x<br>
+                    Draw Penalty: {{ params.draw_penalty }}x
+                </p>
+                <span class="impact-badge impact-medium">Medium Impact</span>
+                
+                <div class="parameter-explanation">
+                    <h4>Was ist Reward Shaping?</h4>
+                    <p>Reward Shaping bestimmt, wie der Agent für seine Aktionen belohnt oder bestraft wird. Es formt das Lernverhalten.</p>
+                    
+                    <h4>Komponenten:</h4>
+                    
+                    <p><strong>1. No-Bet Reward Multiplier ({{ params.no_bet_multiplier }}):</strong></p>
+                    <p>Wie stark wird KEIN Wetten belohnt?</p>
+                    <ul>
+                        <li><strong>HÖHER (0.6-0.8):</strong> Agent bevorzugt No-Bet</li>
+                        <li><strong>NIEDRIGER (0.3-0.4):</strong> Agent bevorzugt Wetten</li>
+                    </ul>
+                    
+                    <p><strong>2. Draw Penalty Multiplier ({{ params.draw_penalty }}):</strong></p>
+                    <p>Wie stark wird Verlust durch Unentschieden bestraft?</p>
+                    <ul>
+                        <li><strong>HÖHER (1.8-2.5):</strong> Agent meidet Draw-Risiken</li>
+                        <li><strong>NIEDRIGER (1.0-1.3):</strong> Agent ignoriert Draws</li>
+                    </ul>
+                    
+                    <p><strong>3. Mode: {{ params.reward_shaping }}</strong></p>
+                    <ul>
+                        <li><strong>Conservative:</strong> Stärker No-Bet belohnen</li>
+                        <li><strong>Aggressive:</strong> Wetten stärker belohnen</li>
+                    </ul>
+                    
+                    <h4>Wie es funktioniert:</h4>
+                    <p>Bei jedem Match:</p>
+                    <ol>
+                        <li>→ Aktion wird ausgeführt</li>
+                        <li>→ Reward wird berechnet</li>
+                        <li>→ Agent lernt aus Reward</li>
+                    </ol>
+                    
+                    <h4>Beispiel (Conservative):</h4>
+                    <div class="example-box">
+                        Match endet Unentschieden:<br>
+                        • Agent hat NICHT gewettet: +0.10€ Reward<br>
+                        • Agent hat Home gewettet: -1.5x Einsatz Penalty
+                    </div>
+                    
+                    <p><strong>Das prägt das Verhalten langfristig!</strong></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Empfehlungen -->
+    <div class="guide-section" style="margin-bottom: 40px;">
+        <h2><span class="icon">💡</span> Empfehlungen für dein Profil</h2>
+        
+        {% if profile_type.class == 'conservative' %}
+        <div class="tuning-tips" style="border: 2px solid var(--primary); padding: 25px; border-radius: 12px; background: rgba(37, 99, 235, 0.05);">
+            <h4 style="color: var(--primary);">🛡️ Konservatives Profil</h4>
+            <p style="margin-bottom: 15px;">
+                Deine Config ist auf Sicherheit ausgelegt. Das führt zu weniger, aber sichereren Wetten.
+            </p>
+            <ul style="line-height: 1.8;">
+                <li><strong>Erwartete Bet Rate:</strong> 15-25% (~45-75 Wetten/Saison)</li>
+                <li><strong>Erwartete Winrate:</strong> 55-65%</li>
+                <li><strong>ROI-Ziel:</strong> 8-12%</li>
+                <li><strong>Varianz:</strong> Niedrig</li>
+                <li><strong>Tipp:</strong> Wenn zu wenige Wetten entstehen, Min Edge auf 0.04 senken</li>
+            </ul>
+        </div>
+        
+        {% elif profile_type.class == 'aggressive' %}
+        <div class="tuning-tips" style="border: 2px solid var(--danger); padding: 25px; border-radius: 12px; background: rgba(239, 68, 68, 0.05);">
+            <h4 style="color: var(--danger);">⚡ Aggressives Profil</h4>
+            <p style="margin-bottom: 15px;">
+                Deine Config ist auf hohe Bet Rate ausgelegt. Das erhöht Gewinnpotential, aber auch Risiko.
+            </p>
+            <ul style="line-height: 1.8;">
+                <li><strong>Erwartete Bet Rate:</strong> 35-50% (~105-150 Wetten/Saison)</li>
+                <li><strong>Erwartete Winrate:</strong> 48-55%</li>
+                <li><strong>ROI-Ziel:</strong> 5-8%</li>
+                <li><strong>Varianz:</strong> Hoch</li>
+                <li><strong>Tipp:</strong> Beobachte Winrate - bei < 48% Confidence erhöhen</li>
+            </ul>
+        </div>
+        
+        {% else %}
+        <div class="tuning-tips" style="border: 2px solid var(--success); padding: 25px; border-radius: 12px; background: rgba(16, 185, 129, 0.05);">
+            <h4 style="color: var(--success);">⚖️ Balanced Profil</h4>
+            <p style="margin-bottom: 15px;">
+                Deine Config ist gut ausbalanciert zwischen Risiko und Sicherheit.
+            </p>
+            <ul style="line-height: 1.8;">
+                <li><strong>Erwartete Bet Rate:</strong> 25-35% (~75-105 Wetten/Saison)</li>
+                <li><strong>Erwartete Winrate:</strong> 50-58%</li>
+                <li><strong>ROI-Ziel:</strong> 6-10%</li>
+                <li><strong>Varianz:</strong> Moderat</li>
+                <li><strong>Tipp:</strong> Diese Config ist ein guter Ausgangspunkt für Experimente</li>
+            </ul>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Tab: Features -->
+<div id="tab-features" class="tab-content">
+    <div class="card">
+        <h2>🔍 Feature Dokumentation</h2>
+        <p>Alle {{ feature_count }} Features, die der Agent nutzt.</p>
+        
+        <!-- Link zur vollständigen Dokumentation -->
+        <div style="margin: 20px 0; padding: 20px; background: rgba(37, 99, 235, 0.1); border-radius: 8px; border-left: 4px solid var(--primary);">
+            <p style="margin-bottom: 15px;">
+                Für die vollständige Feature-Dokumentation mit allen Details, Formeln und Beispielen:
+            </p>
+            <a href="{{ url_for('feature_overview') }}" class="btn-primary">
+                → Zur vollständigen Feature-Dokumentation
+            </a>
+        </div>
+        
+        <!-- Feature Categories (Kurzübersicht) -->
+        {% for category_name, category_data in feature_data.items() %}
+        <div class="category-section">
+            <div class="category-header">
+                <h3>
+                    <span class="category-icon">{{ category_data.icon }}</span>
+                    {{ category_name }}
+                    <span class="feature-count-badge">{{ category_data.features|length }} Features</span>
+                </h3>
+                <p>{{ category_data.description }}</p>
+            </div>
+            
+            <table class="feature-table">
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Beschreibung</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for feature in category_data.features[:5] %}
+                    <tr>
+                        <td class="feature-name-cell">
+                            {{ feature.name }}
+                            {% if feature.type == 'L4' %}
+                                <span class="feature-badge badge-l4">L4</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="feature-description">
+                                {{ feature.description }}
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    {% if category_data.features|length > 5 %}
+                    <tr>
+                        <td colspan="2" style="text-align: center; padding: 15px; background: rgba(37, 99, 235, 0.05);">
+                            <a href="{{ url_for('feature_overview') }}" class="btn-secondary">
+                                Alle {{ category_data.features|length }} Features ansehen →
+                            </a>
+                        </td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Tab: Decision Flow -->
+<div id="tab-decision" class="tab-content">
+    <div class="card">
+        <h2>🧠 Decision Flow</h2>
+        <p>Wie der Agent Schritt für Schritt Entscheidungen trifft.</p>
+        
+        <!-- Decision Steps -->
+        <div class="decision-flow">
+            <div class="decision-step">
+                <div class="step-header">
+                    <span class="step-number">1</span>
+                    <h3>Feature Extraction</h3>
+                </div>
+                <div class="step-content">
+                    <p>{{ feature_count }} Features werden aus den Spieldaten extrahiert:</p>
+                    <ul>
+                        <li>L4-Features (letzte 4 Spiele)</li>
+                        <li>Wettquoten werden in Probabilities konvertiert</li>
+                        <li>Draw Risk wird berechnet</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="decision-step">
+                <div class="step-header">
+                    <span class="step-number">2</span>
+                    <h3>Neural Network Prediction</h3>
+                </div>
+                <div class="step-content">
+                    <p>Features durchlaufen das {{ params.net_arch|join('→') }} Netzwerk:</p>
+                    <ul>
+                        <li>Q-Values für jede Action werden berechnet</li>
+                        <li>Agent wählt Action mit höchstem Q-Value</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="decision-step">
+                <div class="step-header">
+                    <span class="step-number">3</span>
+                    <h3>Confidence Check</h3>
+                </div>
+                <div class="step-content">
+                    <p>Ist Win-Probability > {{ params.confidence_threshold }}?</p>
+                    <ul>
+                        <li>JA → Weiter zu Edge-Check</li>
+                        <li>NEIN → No Bet</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="decision-step">
+                <div class="step-header">
+                    <span class="step-number">4</span>
+                    <h3>Edge Calculation</h3>
+                </div>
+                <div class="step-content">
+                    <p>Ist Edge > {{ params.min_edge }}?</p>
+                    <div class="formula-box">
+                        Edge = Win-Prob - Implied-Prob
+                    </div>
+                    <ul>
+                        <li>JA → Weiter zu Bet Rate Check</li>
+                        <li>NEIN → No Bet</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="decision-step">
+                <div class="step-header">
+                    <span class="step-number">5</span>
+                    <h3>Bet Rate Limit</h3>
+                </div>
+                <div class="step-content">
+                    <p>Ist Bet Rate < {{ (params.max_bet_rate * 100)|int }}%?</p>
+                    <ul>
+                        <li>JA → Weiter zu Bet Size</li>
+                        <li>NEIN → No Bet (Limit erreicht)</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="decision-step" style="border-left-color: var(--success);">
+                <div class="step-header">
+                    <span class="step-number">6</span>
+                    <h3>Bet Size Calculation</h3>
+                </div>
+                <div class="step-content">
+                    <p>Berechne optimale Bet Size:</p>
+                    <ul>
+                        <li>Base: {{ params.bet_amount }}€</li>
+                        <li>Maximum: {{ params.max_bet_amount }}€</li>
+                        {% if params.use_kelly %}
+                        <li>Kelly Criterion: Aktiviert ({{ params.kelly_fraction }})</li>
+                        {% else %}
+                        <li>Confidence-Based Scaling</li>
+                        {% endif %}
+                    </ul>
+                    <div class="example-box">
+                        Beispiel bei 72% Confidence:<br>
+                        → Bet Size: ~{{ ((params.bet_amount * 2)|round(2)) }}€
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function switchTab(tabName) {
+    // Hide all tabs
+    document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    
+    // Remove active from all buttons
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    // Show selected tab
+    document.getElementById('tab-' + tabName).classList.add('active');
+    
+    // Activate button
+    event.target.classList.add('active');
+    
+    // Scroll to top
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/model-guide-dropdowns.js') }}"></script>
+{% endblock %}

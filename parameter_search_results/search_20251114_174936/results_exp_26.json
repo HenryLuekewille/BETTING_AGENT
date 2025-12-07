@@ -1,0 +1,60 @@
+{
+  "experiment_id": 26,
+  "params": {
+    "confidence_threshold": 0.6,
+    "min_edge_required": 0.02,
+    "max_bet_rate": 0.4,
+    "max_bet_amount": 30,
+    "use_kelly_criterion": true,
+    "kelly_fraction": 0.25,
+    "no_bet_reward_multiplier": 0.5,
+    "draw_penalty_multiplier": 1.5,
+    "global_timesteps": 1000000,
+    "learning_rate": 0.0001
+  },
+  "success": true,
+  "roi": -0.06982767538878455,
+  "winrate": 0.47093023255813954,
+  "total_profit": -124.19689999999997,
+  "total_invested": 1778.62,
+  "total_bets": 172,
+  "total_wins": 81,
+  "avg_profit_per_bet": -0.7220749999999998,
+  "max_drawdown": 224.08049999999997,
+  "sharpe_ratio": -0.16077531468752623,
+  "sortino_ratio": -0.39125018622732766,
+  "profit_factor": 0.8634015594541911,
+  "calmar_ratio": 0,
+  "volatility": 30.8994947990323,
+  "avg_bet_size": 10.340813953488372,
+  "bet_frequency": 6.88,
+  "max_consecutive_losses": 13,
+  "action_distribution": {
+    "Away": {
+      "BetAmount": 15,
+      "Won": 7,
+      "Profit": 47.120000000000005
+    },
+    "Home": {
+      "BetAmount": 45,
+      "Won": 13,
+      "Profit": -117.45
+    },
+    "No Bet": {
+      "BetAmount": 53,
+      "Won": 0,
+      "Profit": 0.0
+    },
+    "Over": {
+      "BetAmount": 84,
+      "Won": 48,
+      "Profit": -109.82
+    },
+    "Under": {
+      "BetAmount": 28,
+      "Won": 13,
+      "Profit": 40.0
+    }
+  },
+  "composite_score": 0.08861985298617173
+}

@@ -1,0 +1,636 @@
+{% extends "base.html" %}
+
+{% block title %}Feature Engineering - Betting Agent{% endblock %}
+
+{% block extra_css %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+/* Feature Overview Specific Styles */
+.feature-overview-hero {
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+    padding: 60px 40px;
+    border-radius: 16px;
+    margin-bottom: 40px;
+    border: 2px solid var(--primary);
+    position: relative;
+    overflow: hidden;
+}
+
+.feature-overview-hero::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(37, 99, 235, 0.15) 0%, transparent 70%);
+    animation: pulse-slow 6s ease-in-out infinite;
+}
+
+@keyframes pulse-slow {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 0.6; }
+}
+
+.hero-content {
+    position: relative;
+    z-index: 1;
+}
+
+.hero-title {
+    font-size: 3em;
+    margin-bottom: 20px;
+    background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.hero-subtitle {
+    font-size: 1.3em;
+    color: var(--text-secondary);
+    line-height: 1.8;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+/* Quick Stats Grid */
+.quick-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-top: 40px;
+}
+
+.quick-stat-card {
+    background: rgba(37, 99, 235, 0.1);
+    padding: 25px;
+    border-radius: 12px;
+    border: 2px solid rgba(37, 99, 235, 0.3);
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.quick-stat-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--primary);
+    box-shadow: 0 10px 30px rgba(37, 99, 235, 0.4);
+}
+
+.quick-stat-value {
+    font-size: 3em;
+    font-weight: 700;
+    color: var(--primary-light);
+    display: block;
+}
+
+.quick-stat-label {
+    color: var(--text-secondary);
+    font-size: 0.9em;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 10px;
+}
+
+/* Category Section */
+.category-section {
+    margin-bottom: 60px;
+}
+
+.category-header {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    padding: 30px;
+    border-radius: 12px;
+    margin-bottom: 30px;
+    box-shadow: 0 8px 24px rgba(37, 99, 235, 0.3);
+}
+
+.category-header h2 {
+    color: white;
+    margin: 0;
+    font-size: 2em;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.category-icon {
+    font-size: 1.5em;
+}
+
+.category-description {
+    color: rgba(255, 255, 255, 0.9);
+    margin-top: 15px;
+    font-size: 1.1em;
+    line-height: 1.7;
+}
+
+.feature-count-badge {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.9em;
+    font-weight: 600;
+    margin-left: auto;
+}
+
+/* Feature Table */
+.feature-table {
+    width: 100%;
+    background: var(--bg-card);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.feature-table thead {
+    background: var(--bg-dark);
+}
+
+.feature-table th {
+    padding: 20px;
+    text-align: left;
+    color: var(--text-primary);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 0.9em;
+    border-bottom: 2px solid var(--border);
+}
+
+.feature-table tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: all 0.2s ease;
+}
+
+.feature-table tbody tr:hover {
+    background: rgba(37, 99, 235, 0.05);
+}
+
+.feature-table td {
+    padding: 20px;
+    vertical-align: top;
+}
+
+.feature-name-cell {
+    font-family: 'Courier New', monospace;
+    font-weight: 700;
+    color: var(--primary-light);
+    font-size: 1.05em;
+}
+
+.feature-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.75em;
+    font-weight: 700;
+    margin-left: 8px;
+}
+
+.badge-l4 {
+    background: var(--warning);
+    color: white;
+}
+
+.badge-season {
+    background: var(--secondary);
+    color: white;
+}
+
+.badge-calculated {
+    background: var(--success);
+    color: white;
+}
+
+.feature-description {
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin-bottom: 10px;
+}
+
+.feature-formula {
+    background: rgba(37, 99, 235, 0.1);
+    padding: 12px;
+    border-radius: 8px;
+    border-left: 3px solid var(--primary);
+    margin-top: 10px;
+}
+
+.feature-formula code {
+    font-family: 'Courier New', monospace;
+    color: var(--primary-light);
+    font-size: 0.95em;
+}
+
+.feature-source {
+    color: var(--text-muted);
+    font-size: 0.9em;
+    margin-top: 8px;
+}
+
+/* Example Box */
+.example-box {
+    background: rgba(16, 185, 129, 0.1);
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 3px solid var(--success);
+    margin-top: 10px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9em;
+    color: var(--text-secondary);
+}
+
+/* Feature Importance Section */
+.importance-section {
+    background: var(--bg-card);
+    padding: 40px;
+    border-radius: 16px;
+    margin-top: 60px;
+    border: 2px solid var(--border);
+}
+
+.importance-section h2 {
+    color: var(--primary-light);
+    margin-bottom: 20px;
+}
+
+.chart-wrapper {
+    position: relative;
+    height: 600px;
+    margin-top: 30px;
+}
+
+.chart-loading {
+    text-align: center;
+    padding: 100px 20px;
+}
+
+.loading-spinner {
+    width: 60px;
+    height: 60px;
+    margin: 0 auto 20px;
+    border: 5px solid var(--border);
+    border-top: 5px solid var(--primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Info Boxes */
+.info-box {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(16, 185, 129, 0.05) 100%);
+    border: 2px solid var(--success);
+    border-radius: 12px;
+    padding: 30px;
+    margin-bottom: 40px;
+}
+
+.info-box h3 {
+    color: var(--success);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.5em;
+}
+
+.info-box ul {
+    margin-left: 20px;
+    line-height: 2;
+}
+
+.info-box li {
+    margin-bottom: 12px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .hero-title {
+        font-size: 2em;
+    }
+    
+    .quick-stats {
+        grid-template-columns: 1fr;
+    }
+    
+    .feature-table {
+        font-size: 0.9em;
+    }
+    
+    .chart-wrapper {
+        height: 400px;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- Hero Section -->
+<div class="feature-overview-hero">
+    <div class="hero-content">
+        <h1 class="hero-title">🧠 Feature Engineering Dokumentation</h1>
+        <p class="hero-subtitle">
+            Vollständige Übersicht über alle <strong>{{ features }} Features</strong>, 
+            die dem Reinforcement Learning Agenten zur Verfügung stehen.
+            <br><br>
+            Jedes Feature wurde sorgfältig ausgewählt, um maximale Vorhersagegenauigkeit 
+            bei der Bewertung von Sportwetten zu gewährleisten.
+        </p>
+        
+        <!-- Quick Stats -->
+        <div class="quick-stats">
+            <div class="quick-stat-card">
+                <span class="quick-stat-value">{{ features }}</span>
+                <span class="quick-stat-label">Total Features</span>
+            </div>
+            <div class="quick-stat-card">
+                <span class="quick-stat-value">{{ feature_categories|length }}</span>
+                <span class="quick-stat-label">Kategorien</span>
+            </div>
+            <div class="quick-stat-card">
+                <span class="quick-stat-value">L4</span>
+                <span class="quick-stat-label">Zeitfenster</span>
+            </div>
+            <div class="quick-stat-card">
+                <span class="quick-stat-value">DQN</span>
+                <span class="quick-stat-label">RL Algorithmus</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Strategy Info Box -->
+<div class="info-box">
+    <h3>📘 Feature Engineering Strategie</h3>
+    <p style="font-size: 1.1em; color: var(--text-secondary); margin-bottom: 20px;">
+        Unsere Features basieren auf <strong>statistischer Analyse</strong> und 
+        <strong>Domain-Expertise</strong> im Sportwetten-Bereich.
+    </p>
+    <ul>
+        <li>⚽ <strong>Goals & Scoring:</strong> Tore, Expected Goals, Shot Efficiency</li>
+        <li>📊 <strong>Form & Momentum:</strong> Kurzfristige Performance-Trends (L4-Fenster)</li>
+        <li>💰 <strong>Value Indicators:</strong> Buchmacher-Margen, Implied Probabilities, Edge-Berechnung</li>
+        <li>🎯 <strong>Advanced Metrics:</strong> Attack/Defense Ratios, Form Comparisons</li>
+        <li>📅 <strong>Season Context:</strong> Kumulative Statistiken, Saison-Fortschritt</li>
+        <li>🟨 <strong>Discipline:</strong> Fouls, Karten, Corners (Spielkontrolle)</li>
+    </ul>
+    <p style="margin-top: 20px; padding: 15px; background: rgba(37, 99, 235, 0.1); border-radius: 8px;">
+        <strong>💡 L4-Fokus:</strong> Die meisten Features nutzen ein <strong>4-Spiele-Fenster</strong>, 
+        da dies die optimale Balance zwischen kurzfristigen Trends und statistischer Stabilität bietet.
+    </p>
+</div>
+
+<!-- Feature Categories -->
+{% for category_name, category_data in feature_data.items() %}
+<div class="category-section">
+    <div class="category-header">
+        <h2>
+            <span class="category-icon">{{ category_data.icon }}</span>
+            {{ category_name }}
+            <span class="feature-count-badge">{{ category_data.features|length }} Features</span>
+        </h2>
+        <p class="category-description">{{ category_data.description }}</p>
+    </div>
+    
+    <table class="feature-table">
+        <thead>
+            <tr>
+                <th style="width: 25%;">Feature</th>
+                <th style="width: 50%;">Beschreibung & Berechnung</th>
+                <th style="width: 25%;">Beispiel</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for feature in category_data.features %}
+            <tr>
+                <!-- Feature Name -->
+                <td class="feature-name-cell">
+                    {{ feature.name }}
+                    {% if feature.type == 'L4' %}
+                        <span class="feature-badge badge-l4">L4</span>
+                    {% elif feature.type == 'Season' %}
+                        <span class="feature-badge badge-season">Season</span>
+                    {% elif feature.type == 'Calculated' %}
+                        <span class="feature-badge badge-calculated">Calc</span>
+                    {% endif %}
+                </td>
+                
+                <!-- Description & Formula -->
+                <td>
+                    <div class="feature-description">
+                        {{ feature.description }}
+                    </div>
+                    
+                    {% if feature.formula %}
+                    <div class="feature-formula">
+                        <strong>Berechnung:</strong><br>
+                        <code>{{ feature.formula }}</code>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="feature-source">
+                        <strong>Quelle:</strong> {{ feature.source }}
+                    </div>
+                </td>
+                
+                <!-- Example -->
+                <td>
+                    {% if feature.example %}
+                    <div class="example-box">
+                        {{ feature.example|safe }}
+                    </div>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endfor %}
+
+<!-- Feature Importance Chart -->
+<div class="importance-section">
+    <h2>⚖️ Feature Importance – Model Gewichtung</h2>
+    <p style="color: var(--text-secondary); margin-bottom: 20px; line-height: 1.7; font-size: 1.05em;">
+        Basierend auf den Gewichten des zuletzt trainierten Modells aus dem ersten Layer des DQN-Netzwerks.
+        <br>
+        <strong>Interpretation:</strong> Höhere Werte bedeuten, dass das Feature einen größeren Einfluss 
+        auf die Q-Value-Vorhersagen und damit auf die Wettenentscheidungen hat.
+    </p>
+
+    <div class="chart-wrapper">
+        <canvas id="importance-chart"></canvas>
+        <div id="chart-loading" class="chart-loading">
+            <div class="loading-spinner"></div>
+            <p class="status-message">Lade Feature Importance aus Modell...</p>
+        </div>
+    </div>
+
+    <p style="text-align: center; color: var(--text-muted); font-size: 0.95em; margin-top: 30px;">
+        💡 <strong>Hinweis:</strong> Die Gewichtung wird automatisch aus dem neuronalen Netz extrahiert 
+        (Absolutwerte der ersten Layer-Weights, normalisiert). Top-20 Features werden angezeigt.
+    </p>
+</div>
+
+<!-- Bottom Actions -->
+<div class="button-group" style="margin-top: 50px;">
+    <a href="{{ url_for('index') }}" class="btn-primary">🚀 Training starten</a>
+    <a href="{{ url_for('model_info') }}" class="btn-secondary">📖 Model Guide</a>
+    <a href="{{ url_for('data_management') }}" class="btn-secondary">📊 Daten verwalten</a>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+
+// Load Feature Importance Chart
+@app.route('/api/feature_importance', methods=['GET'])
+def api_feature_importance():
+    """
+    Get feature importance from trained model.
+    ✅ FIX: Korrekter Zugriff auf QNetwork Layer
+    """
+    try:
+        # Suche in allen run_* directories
+        runs_dir = BASE_DIR / 'runs'
+        
+        if not runs_dir.exists():
+            return jsonify({
+                'error': 'Keine Trainings-Runs gefunden',
+                'hint': 'Bitte zuerst ein Training durchführen'
+            }), 404
+        
+        # Sammle alle Model-Dateien
+        all_models = []
+        
+        for run_dir in runs_dir.glob('run_*'):
+            models_dir = run_dir / 'models'
+            
+            if not models_dir.exists():
+                continue
+            
+            for model_file in models_dir.glob('*.zip'):
+                all_models.append({
+                    'path': model_file,
+                    'mtime': model_file.stat().st_mtime,
+                    'run': run_dir.name,
+                    'name': model_file.name
+                })
+        
+        if not all_models:
+            return jsonify({
+                'error': 'Kein trainiertes Modell gefunden',
+                'hint': 'Bitte zuerst ein Training durchführen',
+                'searched_in': str(runs_dir)
+            }), 404
+        
+        # Sortiere nach Modify-Zeit (neuestes zuerst)
+        all_models.sort(key=lambda x: x['mtime'], reverse=True)
+        latest = all_models[0]
+        
+        print(f"🔍 Feature Importance - Lade Model:")
+        print(f"   Run:  {latest['run']}")
+        print(f"   File: {latest['name']}")
+        print(f"   Path: {latest['path']}")
+        
+        # Lade Model und extrahiere Weights
+        try:
+            from stable_baselines3 import DQN
+            import torch
+            
+            model = DQN.load(str(latest['path']))
+            
+            # ✅ FIX: Korrekter Zugriff auf Q-Network
+            q_net = model.policy.q_net
+            
+            # Get first layer weights
+            # QNetwork ist ein nn.Sequential, zugriff via list()
+            layers = list(q_net.children())
+            
+            if len(layers) == 0:
+                return jsonify({
+                    'error': 'Model hat keine Layer',
+                    'details': 'Q-Network ist leer'
+                }), 500
+            
+            # Erster Layer sollte Linear sein
+            first_layer = layers[0]
+            
+            if not hasattr(first_layer, 'weight'):
+                return jsonify({
+                    'error': 'Erster Layer hat keine Weights',
+                    'details': f'Layer type: {type(first_layer)}'
+                }), 500
+            
+            weights = first_layer.weight.detach().cpu().numpy()
+            
+            # Calculate importance (mean absolute weight per feature)
+            importance = np.abs(weights).mean(axis=0)
+            
+            # Normalize to sum to 1
+            importance = importance / importance.sum()
+            
+            # Get feature names from config
+            config = load_config()
+            feature_names = []
+            
+            for category in config.get('features', {}).get('categories', []):
+                feature_names.extend(category.get('features', []))
+            
+            # Match features to importance scores
+            importance_dict = {}
+            
+            for i, name in enumerate(feature_names):
+                if i < len(importance):
+                    importance_dict[name] = float(importance[i])
+            
+            # Add metadata
+            response = {
+                'success': True,
+                'importance': importance_dict,
+                'metadata': {
+                    'model_run': latest['run'],
+                    'model_name': latest['name'],
+                    'features_count': len(importance_dict),
+                    'model_modified': datetime.fromtimestamp(latest['mtime']).isoformat(),
+                    'total_models_found': len(all_models)
+                }
+            }
+            
+            print(f"✅ Feature Importance berechnet: {len(importance_dict)} Features")
+            
+            return jsonify(response)
+            
+        except ImportError as e:
+            return jsonify({
+                'error': 'Stable-Baselines3 nicht installiert',
+                'details': str(e)
+            }), 500
+            
+        except Exception as e:
+            import traceback
+            traceback.print_exc()
+            return jsonify({
+                'error': f'Fehler beim Laden des Modells: {str(e)}',
+                'model_path': str(latest['path']),
+                'traceback': traceback.format_exc()
+            }), 500
+        
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({
+            'error': f'Unerwarteter Fehler: {str(e)}'
+        }), 500
+
+// Load on page ready
+window.addEventListener('DOMContentLoaded', loadFeatureImportance);
+</script>
+{% endblock %}

@@ -1,0 +1,23 @@
+# Web Framework
+flask==3.0.0
+werkzeug==3.0.0
+
+# Data Processing
+pandas==2.1.4
+numpy==1.26.2
+pyyaml==6.0.1
+requests==2.31.0
+
+# Machine Learning
+stable-baselines3==2.2.1
+gymnasium==0.29.1
+torch==2.1.2
+
+# Excel Export
+openpyxl==3.1.2
+xlsxwriter==3.1.9
+
+# Utilities
+python-dateutil==2.8.2
+tqdm==4.66.1
+matplotlib==3.8.2

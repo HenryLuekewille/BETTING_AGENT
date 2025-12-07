@@ -1,0 +1,24 @@
+name: "Conservative"
+emoji: "🛡️"
+description: "Maximale Sicherheit, nur Top-Wetten"
+
+# ✅ Training Settings
+training:
+  target_season: 2024
+  fine_tune_gamedays: 8
+  global_timesteps: 1000000
+  finetune_timesteps: 100000
+  incremental_learning: true
+
+# ✅ Environment Settings
+environment:
+  confidence_threshold: 0.70
+  min_edge_required: 0.06
+  max_bet_rate: 0.25
+  bet_amount: 10.0
+  max_bet_amount: 10.0
+  use_kelly_criterion: false
+  kelly_fraction: 0.15
+  reward_shaping: "conservative"
+  no_bet_reward_multiplier: 0.7
+  draw_penalty_multiplier: 2.0

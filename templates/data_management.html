@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+
+{% block title %}Datenverwaltung - Betting Agent{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>📊 Datenverwaltung</h2>
+    <p>Lade Bundesliga-Daten von football-data.co.uk herunter und verarbeite sie für das Training.</p>
+</div>
+
+<!-- Download Section -->
+<div class="card">
+    <h3>⬇️ Schritt 1: Daten herunterladen</h3>
+    
+    <div class="season-selector">
+        <p><strong>Wähle Saisons zum Download:</strong></p>
+        <div class="checkbox-grid">
+            {% for year in range(2016, 2026) %}
+            <label class="checkbox-label">
+                <input type="checkbox" class="season-checkbox" value="{{ year }}" 
+                       {% if year >= 2016 and year <= 2024 %}checked{% endif %}>
+                Saison {{ year }}/{{ year+1 }}
+            </label>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <div class="button-group">
+        <button id="btn-download" class="btn-primary" onclick="startDownload()">
+            ⬇️ Download starten
+        </button>
+        <button id="btn-select-all" class="btn-secondary" onclick="selectAllSeasons()">
+            ✅ Alle auswählen
+        </button>
+    </div>
+    
+    <!-- Download Progress -->
+    <div id="download-progress" style="display: none; margin-top: 20px;">
+        <div class="progress-container">
+            <div class="progress-bar" id="download-progress-bar" style="width: 0%">0%</div>
+        </div>
+        <p id="download-message" class="status-message">Wird gestartet...</p>
+    </div>
+</div>
+
+<!-- Raw Data Overview -->
+<div class="card">
+    <h3>📁 Heruntergeladene Rohdaten</h3>
+    
+    {% if raw_data %}
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Saison</th>
+                    <th>Dateiname</th>
+                    <th>Größe</th>
+                    <th>Geändert</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for file in raw_data %}
+                <tr>
+                    <td>{{ file.season }}</td>
+                    <td>{{ file.filename }}</td>
+                    <td>{{ "%.1f"|format(file.size) }} KB</td>
+                    <td>{{ file.modified }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="empty-state">Keine Rohdaten vorhanden. Bitte zuerst Daten herunterladen.</p>
+    {% endif %}
+</div>
+
+<!-- Preprocessing Section -->
+<div class="card">
+    <h3>🔧 Schritt 2: Daten verarbeiten</h3>
+    
+    <p>Kombiniert alle heruntergeladenen Saisons und berechnet Features für das RL-Training.</p>
+    
+    <div class="button-group">
+        <button id="btn-preprocess" class="btn-primary" onclick="startPreprocessing()"
+                {% if not raw_data %}disabled{% endif %}>
+            🔧 Preprocessing starten
+        </button>
+    </div>
+    
+    <!-- Preprocessing Progress -->
+    <div id="preprocess-progress" style="display: none; margin-top: 20px;">
+        <div class="progress-container">
+            <div class="progress-bar" id="preprocess-progress-bar" style="width: 0%">0%</div>
+        </div>
+        <p id="preprocess-message" class="status-message">Wird gestartet...</p>
+    </div>
+</div>
+
+<!-- Processed Data Overview -->
+<div class="card">
+    <h3>✅ Verarbeitete Trainingsdaten</h3>
+    
+    {% if processed_data %}
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Dateiname</th>
+                    <th>Größe</th>
+                    <th>Erstellt</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for file in processed_data %}
+                <tr>
+                    <td>{{ file.filename }}</td>
+                    <td>{{ "%.1f"|format(file.size) }} KB</td>
+                    <td>{{ file.modified }}</td>
+                    <td><span class="badge success">✅ Bereit</span></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="button-group">
+        <a href="{{ url_for('index') }}" class="btn-primary">
+            → Training starten
+        </a>
+    </div>
+    {% else %}
+    <p class="empty-state">Keine verarbeiteten Daten vorhanden. Bitte zuerst Preprocessing durchführen.</p>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/data_download.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,1577 @@
+{
+  "generated": "2025-11-22T19:02:08.800902",
+  "single_runs": [
+    {
+      "run_id": "run_20251110_152117",
+      "run_path": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251110_152117",
+      "timestamp": "20251110_161715",
+      "config": {
+        "data": {
+          "data_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/data/processed",
+          "league": "Bundesliga",
+          "pattern": "Bundesliga_*.csv"
+        },
+        "environment": {
+          "bet_amount": 10.0,
+          "confidence_threshold": 0.8,
+          "draw_penalty_multiplier": 1.5,
+          "max_bet_rate": 0.6,
+          "min_edge_required": 0.02,
+          "min_gameday": 4,
+          "no_bet_reward_multiplier": 0.5,
+          "reward_shaping": "conservative",
+          "use_betting_odds": true,
+          "use_kelly_criterion": true
+        },
+        "model": {
+          "algorithm": "DQN",
+          "dqn": {
+            "batch_size": 64,
+            "buffer_size": 100000,
+            "exploration_final_eps": 0.02,
+            "exploration_fraction": 0.3,
+            "exploration_initial_eps": 1.0,
+            "gamma": 0.95,
+            "learning_rate": 0.0001,
+            "learning_rate_finetune": 1e-05,
+            "learning_rate_incremental": 5e-06,
+            "learning_starts": 5000,
+            "target_update_interval": 500,
+            "tau": 1.0
+          },
+          "policy_kwargs": {
+            "net_arch": [
+              256,
+              256,
+              128
+            ]
+          }
+        },
+        "paths": {
+          "checkpoints_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251110_152117/checkpoints",
+          "data_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/data/processed",
+          "logs_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251110_152117/logs",
+          "models_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251110_152117/models",
+          "results_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251110_152117/results"
+        },
+        "training": {
+          "fine_tune_gamedays": 12,
+          "finetune_timesteps": 100000,
+          "global_seasons": {
+            "end": 2023,
+            "start": 2016
+          },
+          "global_timesteps": 500000,
+          "incremental_frequency": 1,
+          "incremental_learning": true,
+          "incremental_timesteps": 5000,
+          "target_season": 2024
+        }
+      },
+      "training_metrics": {
+        "has_global_training": true,
+        "has_finetuning": true
+      },
+      "evaluation_metrics": {
+        "final_roi": -0.2262135922330097,
+        "final_winrate": 0.3689320388349515,
+        "total_bets": 103,
+        "total_wins": 38,
+        "total_profit": -233.0,
+        "final_balance": 0.0,
+        "gamedays_played": 22,
+        "sharpe_ratio": -0.5131471505693763,
+        "max_drawdown": 238.9
+      },
+      "files": {
+        "excel": "evaluation_2024_20251110_161715.xlsx",
+        "csv_files": [
+          "gameday_results_2024_20251110_161715.csv"
+        ],
+        "log": "training.log",
+        "models": [
+          "global_model_2024.zip",
+          "finetuned_model_2024.zip"
+        ]
+      }
+    },
+    {
+      "run_id": "run_20251110_122430",
+      "run_path": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251110_122430",
+      "timestamp": null,
+      "config": {
+        "data": {
+          "data_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/data/processed",
+          "league": "Bundesliga",
+          "pattern": "Bundesliga_*.csv"
+        },
+        "environment": {
+          "bet_amount": 10.0,
+          "confidence_threshold": 0.6,
+          "min_gameday": 4,
+          "reward_shaping": "roi",
+          "use_betting_odds": true
+        },
+        "model": {
+          "algorithm": "DQN",
+          "dqn": {
+            "batch_size": 64,
+            "buffer_size": 100000,
+            "exploration_final_eps": 0.02,
+            "exploration_fraction": 0.3,
+            "exploration_initial_eps": 1.0,
+            "gamma": 0.95,
+            "learning_rate": 0.0001,
+            "learning_rate_finetune": 1e-05,
+            "learning_rate_incremental": 5e-06,
+            "learning_starts": 5000,
+            "target_update_interval": 500,
+            "tau": 1.0
+          },
+          "policy_kwargs": {
+            "net_arch": [
+              256,
+              256,
+              128
+            ]
+          }
+        },
+        "paths": {
+          "checkpoints_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251110_122430/checkpoints",
+          "data_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/data/processed",
+          "logs_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251110_122430/logs",
+          "models_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251110_122430/models",
+          "results_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251110_122430/results"
+        },
+        "training": {
+          "fine_tune_gamedays": 9,
+          "finetune_timesteps": 50000,
+          "global_seasons": {
+            "end": 2023,
+            "start": 2016
+          },
+          "global_timesteps": 500000,
+          "incremental_frequency": 1,
+          "incremental_learning": true,
+          "incremental_timesteps": 5000,
+          "target_season": 2024
+        }
+      },
+      "training_metrics": {},
+      "evaluation_metrics": {},
+      "files": {
+        "csv_files": [],
+        "models": []
+      }
+    },
+    {
+      "run_id": "run_20251114_150115",
+      "run_path": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251114_150115",
+      "timestamp": "20251114_154034",
+      "config": {
+        "data": {
+          "data_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/data/processed",
+          "league": "Bundesliga",
+          "pattern": "Bundesliga_*.csv"
+        },
+        "environment": {
+          "bet_amount": 10.0,
+          "confidence_threshold": 0.6,
+          "draw_penalty_multiplier": 1.5,
+          "kelly_fraction": 0.25,
+          "max_bet_amount": 30.0,
+          "max_bet_rate": 0.4,
+          "min_edge_required": 0.02,
+          "min_gameday": 4,
+          "no_bet_reward_multiplier": 0.5,
+          "reward_shaping": "conservative",
+          "use_betting_odds": true,
+          "use_kelly_criterion": true
+        },
+        "model": {
+          "algorithm": "DQN",
+          "dqn": {
+            "batch_size": 64,
+            "buffer_size": 100000,
+            "exploration_final_eps": 0.02,
+            "exploration_fraction": 0.3,
+            "exploration_initial_eps": 1.0,
+            "gamma": 0.95,
+            "learning_rate": 0.0001,
+            "learning_rate_finetune": 1e-05,
+            "learning_rate_incremental": 5e-06,
+            "learning_starts": 5000,
+            "target_update_interval": 500,
+            "tau": 1.0
+          },
+          "policy_kwargs": {
+            "net_arch": [
+              256,
+              256,
+              128
+            ]
+          }
+        },
+        "paths": {
+          "checkpoints_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251114_150115/checkpoints",
+          "data_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/data/processed",
+          "logs_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251114_150115/logs",
+          "models_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251114_150115/models",
+          "results_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251114_150115/results"
+        },
+        "training": {
+          "fine_tune_gamedays": 8,
+          "finetune_timesteps": 100000,
+          "global_seasons": {
+            "end": 2023,
+            "start": 2016
+          },
+          "global_timesteps": 1000000,
+          "incremental_frequency": 1,
+          "incremental_learning": true,
+          "incremental_timesteps": 5000,
+          "target_season": 2024
+        }
+      },
+      "training_metrics": {
+        "has_global_training": true,
+        "has_finetuning": true
+      },
+      "evaluation_metrics": {
+        "final_roi": 0.0747590361445783,
+        "final_winrate": 0.4216867469879518,
+        "total_bets": 166,
+        "total_wins": 70,
+        "total_profit": 124.1,
+        "final_balance": 0.0,
+        "gamedays_played": 26,
+        "sharpe_ratio": 0.12149435364355679,
+        "max_drawdown": 155.50000000000003
+      },
+      "files": {
+        "excel": "evaluation_2024_20251114_154034.xlsx",
+        "csv_files": [
+          "gameday_results_2024_20251114_154034.csv"
+        ],
+        "log": "training.log",
+        "models": [
+          "global_model_2024.zip",
+          "finetuned_model_2024.zip"
+        ]
+      }
+    },
+    {
+      "run_id": "run_20251114_173707",
+      "run_path": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251114_173707",
+      "timestamp": null,
+      "config": {
+        "data": {
+          "data_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/data/processed",
+          "league": "Bundesliga",
+          "pattern": "Bundesliga_*.csv"
+        },
+        "environment": {
+          "bet_amount": 10.0,
+          "confidence_threshold": 0.6,
+          "draw_penalty_multiplier": 1.5,
+          "kelly_fraction": 0.25,
+          "max_bet_amount": 30.0,
+          "max_bet_rate": 0.3,
+          "min_edge_required": 0.05,
+          "min_gameday": 4,
+          "no_bet_reward_multiplier": 0.5,
+          "reward_shaping": "conservative",
+          "use_betting_odds": true,
+          "use_kelly_criterion": true
+        },
+        "model": {
+          "algorithm": "DQN",
+          "dqn": {
+            "batch_size": 64,
+            "buffer_size": 100000,
+            "exploration_final_eps": 0.02,
+            "exploration_fraction": 0.3,
+            "exploration_initial_eps": 1.0,
+            "gamma": 0.95,
+            "learning_rate": 0.0001,
+            "learning_rate_finetune": 1e-05,
+            "learning_rate_incremental": 5e-06,
+            "learning_starts": 5000,
+            "target_update_interval": 500,
+            "tau": 1.0
+          },
+          "policy_kwargs": {
+            "net_arch": [
+              256,
+              256,
+              128
+            ]
+          }
+        },
+        "paths": {
+          "checkpoints_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251114_173707/checkpoints",
+          "data_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/data/processed",
+          "logs_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251114_173707/logs",
+          "models_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251114_173707/models",
+          "results_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251114_173707/results"
+        },
+        "training": {
+          "fine_tune_gamedays": 8,
+          "finetune_timesteps": 100000,
+          "global_seasons": {
+            "end": 2023,
+            "start": 2016
+          },
+          "global_timesteps": 1000000,
+          "incremental_frequency": 1,
+          "incremental_learning": true,
+          "incremental_timesteps": 5000,
+          "target_season": 2024
+        }
+      },
+      "training_metrics": {
+        "has_global_training": true
+      },
+      "evaluation_metrics": {},
+      "files": {
+        "csv_files": [],
+        "log": "training.log",
+        "models": []
+      }
+    },
+    {
+      "run_id": "run_20251110_125507",
+      "run_path": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251110_125507",
+      "timestamp": "20251110_131421",
+      "config": {
+        "data": {
+          "data_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/data/processed",
+          "league": "Bundesliga",
+          "pattern": "Bundesliga_*.csv"
+        },
+        "environment": {
+          "bet_amount": 10.0,
+          "confidence_threshold": 0.6,
+          "min_gameday": 4,
+          "reward_shaping": "roi",
+          "use_betting_odds": true
+        },
+        "model": {
+          "algorithm": "DQN",
+          "dqn": {
+            "batch_size": 64,
+            "buffer_size": 100000,
+            "exploration_final_eps": 0.02,
+            "exploration_fraction": 0.3,
+            "exploration_initial_eps": 1.0,
+            "gamma": 0.95,
+            "learning_rate": 0.0001,
+            "learning_rate_finetune": 1e-05,
+            "learning_rate_incremental": 5e-06,
+            "learning_starts": 5000,
+            "target_update_interval": 500,
+            "tau": 1.0
+          },
+          "policy_kwargs": {
+            "net_arch": [
+              256,
+              256,
+              128
+            ]
+          }
+        },
+        "paths": {
+          "checkpoints_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251110_125507/checkpoints",
+          "data_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/data/processed",
+          "logs_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251110_125507/logs",
+          "models_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251110_125507/models",
+          "results_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251110_125507/results"
+        },
+        "training": {
+          "fine_tune_gamedays": 9,
+          "finetune_timesteps": 50000,
+          "global_seasons": {
+            "end": 2023,
+            "start": 2016
+          },
+          "global_timesteps": 500000,
+          "incremental_frequency": 1,
+          "incremental_learning": true,
+          "incremental_timesteps": 5000,
+          "target_season": 2024
+        }
+      },
+      "training_metrics": {},
+      "evaluation_metrics": {
+        "final_roi": -0.1349760765550239,
+        "final_winrate": 0.4545454545454545,
+        "total_bets": 209,
+        "total_wins": 95,
+        "total_profit": -282.1,
+        "final_balance": 0.0,
+        "gamedays_played": 25,
+        "sharpe_ratio": -0.3585537836502463,
+        "max_drawdown": 335.6
+      },
+      "files": {
+        "excel": "evaluation_2024_20251110_131421.xlsx",
+        "csv_files": [
+          "gameday_results_2024_20251110_131421.csv"
+        ],
+        "models": [
+          "global_model_2024.zip",
+          "finetuned_model_2024.zip"
+        ]
+      }
+    },
+    {
+      "run_id": "run_20251111_065542",
+      "run_path": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251111_065542",
+      "timestamp": "20251111_073011",
+      "config": {
+        "data": {
+          "data_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/data/processed",
+          "league": "Bundesliga",
+          "pattern": "Bundesliga_*.csv"
+        },
+        "environment": {
+          "bet_amount": 10.0,
+          "confidence_threshold": 0.7,
+          "draw_penalty_multiplier": 1.5,
+          "max_bet_rate": 0.5,
+          "min_edge_required": 0.02,
+          "min_gameday": 4,
+          "no_bet_reward_multiplier": 0.5,
+          "reward_shaping": "conservative",
+          "use_betting_odds": true,
+          "use_kelly_criterion": true
+        },
+        "model": {
+          "algorithm": "DQN",
+          "dqn": {
+            "batch_size": 64,
+            "buffer_size": 100000,
+            "exploration_final_eps": 0.02,
+            "exploration_fraction": 0.3,
+            "exploration_initial_eps": 1.0,
+            "gamma": 0.95,
+            "learning_rate": 0.0001,
+            "learning_rate_finetune": 1e-05,
+            "learning_rate_incremental": 5e-06,
+            "learning_starts": 5000,
+            "target_update_interval": 500,
+            "tau": 1.0
+          },
+          "policy_kwargs": {
+            "net_arch": [
+              256,
+              256,
+              128
+            ]
+          }
+        },
+        "paths": {
+          "checkpoints_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251111_065542/checkpoints",
+          "data_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/data/processed",
+          "logs_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251111_065542/logs",
+          "models_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251111_065542/models",
+          "results_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251111_065542/results"
+        },
+        "training": {
+          "fine_tune_gamedays": 12,
+          "finetune_timesteps": 100000,
+          "global_seasons": {
+            "end": 2023,
+            "start": 2016
+          },
+          "global_timesteps": 1000000,
+          "incremental_frequency": 1,
+          "incremental_learning": true,
+          "incremental_timesteps": 5000,
+          "target_season": 2024
+        }
+      },
+      "training_metrics": {
+        "has_global_training": true,
+        "has_finetuning": true
+      },
+      "evaluation_metrics": {
+        "final_roi": -0.1935031847133759,
+        "final_winrate": 0.3375796178343949,
+        "total_bets": 157,
+        "total_wins": 53,
+        "total_profit": -303.8000000000001,
+        "final_balance": 0.0,
+        "gamedays_played": 22,
+        "sharpe_ratio": -0.3183900384220861,
+        "max_drawdown": 291.3000000000001
+      },
+      "files": {
+        "excel": "evaluation_2024_20251111_073011.xlsx",
+        "csv_files": [
+          "gameday_results_2024_20251111_073011.csv"
+        ],
+        "log": "training.log",
+        "models": [
+          "global_model_2024.zip",
+          "finetuned_model_2024.zip"
+        ]
+      }
+    },
+    {
+      "run_id": "run_20251110_124123",
+      "run_path": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251110_124123",
+      "timestamp": null,
+      "config": {
+        "data": {
+          "data_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/data/processed",
+          "league": "Bundesliga",
+          "pattern": "Bundesliga_*.csv"
+        },
+        "environment": {
+          "bet_amount": 10.0,
+          "confidence_threshold": 0.6,
+          "min_gameday": 4,
+          "reward_shaping": "roi",
+          "use_betting_odds": true
+        },
+        "model": {
+          "algorithm": "DQN",
+          "dqn": {
+            "batch_size": 64,
+            "buffer_size": 100000,
+            "exploration_final_eps": 0.02,
+            "exploration_fraction": 0.3,
+            "exploration_initial_eps": 1.0,
+            "gamma": 0.95,
+            "learning_rate": 0.0001,
+            "learning_rate_finetune": 1e-05,
+            "learning_rate_incremental": 5e-06,
+            "learning_starts": 5000,
+            "target_update_interval": 500,
+            "tau": 1.0
+          },
+          "policy_kwargs": {
+            "net_arch": [
+              256,
+              256,
+              128
+            ]
+          }
+        },
+        "paths": {
+          "checkpoints_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251110_124123/checkpoints",
+          "data_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/data/processed",
+          "logs_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251110_124123/logs",
+          "models_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251110_124123/models",
+          "results_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251110_124123/results"
+        },
+        "training": {
+          "fine_tune_gamedays": 9,
+          "finetune_timesteps": 50000,
+          "global_seasons": {
+            "end": 2023,
+            "start": 2016
+          },
+          "global_timesteps": 500000,
+          "incremental_frequency": 1,
+          "incremental_learning": true,
+          "incremental_timesteps": 5000,
+          "target_season": 2024
+        }
+      },
+      "training_metrics": {},
+      "evaluation_metrics": {},
+      "files": {
+        "csv_files": [],
+        "models": []
+      }
+    },
+    {
+      "run_id": "run_20251110_133916",
+      "run_path": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251110_133916",
+      "timestamp": null,
+      "config": {
+        "data": {
+          "data_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/data/processed",
+          "league": "Bundesliga",
+          "pattern": "Bundesliga_*.csv"
+        },
+        "environment": {
+          "bet_amount": 10.0,
+          "confidence_threshold": 0.7,
+          "draw_penalty_multiplier": 1.5,
+          "max_bet_rate": 0.3,
+          "min_edge_required": 0.05,
+          "min_gameday": 4,
+          "no_bet_reward_multiplier": 0.5,
+          "reward_shaping": "conservative",
+          "use_betting_odds": true,
+          "use_kelly_criterion": true
+        },
+        "model": {
+          "algorithm": "DQN",
+          "dqn": {
+            "batch_size": 64,
+            "buffer_size": 100000,
+            "exploration_final_eps": 0.02,
+            "exploration_fraction": 0.3,
+            "exploration_initial_eps": 1.0,
+            "gamma": 0.95,
+            "learning_rate": 0.0001,
+            "learning_rate_finetune": 1e-05,
+            "learning_rate_incremental": 5e-06,
+            "learning_starts": 5000,
+            "target_update_interval": 500,
+            "tau": 1.0
+          },
+          "policy_kwargs": {
+            "net_arch": [
+              256,
+              256,
+              128
+            ]
+          }
+        },
+        "paths": {
+          "checkpoints_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251110_133916/checkpoints",
+          "data_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/data/processed",
+          "logs_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251110_133916/logs",
+          "models_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251110_133916/models",
+          "results_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251110_133916/results"
+        },
+        "training": {
+          "fine_tune_gamedays": 12,
+          "finetune_timesteps": 50000,
+          "global_seasons": {
+            "end": 2023,
+            "start": 2016
+          },
+          "global_timesteps": 500000,
+          "incremental_frequency": 1,
+          "incremental_learning": true,
+          "incremental_timesteps": 5000,
+          "target_season": 2024
+        }
+      },
+      "training_metrics": {},
+      "evaluation_metrics": {},
+      "files": {
+        "csv_files": [],
+        "models": []
+      }
+    },
+    {
+      "run_id": "run_20251115_154237",
+      "run_path": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251115_154237",
+      "timestamp": "20251115_164715",
+      "config": {
+        "data": {
+          "data_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/data/processed",
+          "league": "Bundesliga",
+          "pattern": "Bundesliga_*.csv"
+        },
+        "environment": {
+          "bet_amount": 10.0,
+          "confidence_threshold": 0.6,
+          "draw_penalty_multiplier": 1.5,
+          "kelly_fraction": 0.25,
+          "max_bet_amount": 30.0,
+          "max_bet_rate": 0.3,
+          "min_edge_required": 0.05,
+          "min_gameday": 4,
+          "no_bet_reward_multiplier": 0.5,
+          "reward_shaping": "conservative",
+          "use_betting_odds": true,
+          "use_kelly_criterion": true
+        },
+        "model": {
+          "algorithm": "DQN",
+          "dqn": {
+            "batch_size": 64,
+            "buffer_size": 100000,
+            "exploration_final_eps": 0.02,
+            "exploration_fraction": 0.3,
+            "exploration_initial_eps": 1.0,
+            "gamma": 0.95,
+            "learning_rate": 0.0001,
+            "learning_rate_finetune": 1e-05,
+            "learning_rate_incremental": 5e-06,
+            "learning_starts": 5000,
+            "target_update_interval": 500,
+            "tau": 1.0
+          },
+          "policy_kwargs": {
+            "net_arch": [
+              256,
+              256,
+              128
+            ]
+          }
+        },
+        "paths": {
+          "checkpoints_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251115_154237/checkpoints",
+          "data_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/data/processed",
+          "logs_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251115_154237/logs",
+          "models_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251115_154237/models",
+          "results_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251115_154237/results"
+        },
+        "training": {
+          "fine_tune_gamedays": 8,
+          "finetune_timesteps": 100000,
+          "global_seasons": {
+            "end": 2024,
+            "start": 2016
+          },
+          "global_timesteps": 1000000,
+          "incremental_frequency": 1,
+          "incremental_learning": true,
+          "incremental_timesteps": 5000,
+          "target_season": 2025
+        }
+      },
+      "training_metrics": {
+        "has_global_training": true,
+        "has_finetuning": true
+      },
+      "evaluation_metrics": {
+        "final_roi": 0.1727435229410913,
+        "final_winrate": 0.6923076923076923,
+        "total_bets": 13,
+        "total_wins": 9,
+        "total_profit": 23.8697,
+        "final_balance": 0.0,
+        "gamedays_played": 2,
+        "sharpe_ratio": 83.54812740636714,
+        "max_drawdown": 0.0
+      },
+      "files": {
+        "excel": "evaluation_2025_20251115_164715.xlsx",
+        "csv_files": [
+          "gameday_results_2025_20251115_164715.csv"
+        ],
+        "log": "training.log",
+        "models": [
+          "global_model_2025.zip",
+          "finetuned_model_2025.zip"
+        ]
+      }
+    },
+    {
+      "run_id": "run_20251110_134354",
+      "run_path": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251110_134354",
+      "timestamp": null,
+      "config": {
+        "data": {
+          "data_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/data/processed",
+          "league": "Bundesliga",
+          "pattern": "Bundesliga_*.csv"
+        },
+        "environment": {
+          "bet_amount": 10.0,
+          "confidence_threshold": 0.7,
+          "draw_penalty_multiplier": 1.5,
+          "max_bet_rate": 0.3,
+          "min_edge_required": 0.05,
+          "min_gameday": 4,
+          "no_bet_reward_multiplier": 0.5,
+          "reward_shaping": "conservative",
+          "use_betting_odds": true,
+          "use_kelly_criterion": true
+        },
+        "model": {
+          "algorithm": "DQN",
+          "dqn": {
+            "batch_size": 64,
+            "buffer_size": 100000,
+            "exploration_final_eps": 0.02,
+            "exploration_fraction": 0.3,
+            "exploration_initial_eps": 1.0,
+            "gamma": 0.95,
+            "learning_rate": 0.0001,
+            "learning_rate_finetune": 1e-05,
+            "learning_rate_incremental": 5e-06,
+            "learning_starts": 5000,
+            "target_update_interval": 500,
+            "tau": 1.0
+          },
+          "policy_kwargs": {
+            "net_arch": [
+              256,
+              256,
+              128
+            ]
+          }
+        },
+        "paths": {
+          "checkpoints_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251110_134354/checkpoints",
+          "data_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/data/processed",
+          "logs_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251110_134354/logs",
+          "models_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251110_134354/models",
+          "results_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251110_134354/results"
+        },
+        "training": {
+          "fine_tune_gamedays": 9,
+          "finetune_timesteps": 50000,
+          "global_seasons": {
+            "end": 2023,
+            "start": 2016
+          },
+          "global_timesteps": 500000,
+          "incremental_frequency": 1,
+          "incremental_learning": true,
+          "incremental_timesteps": 5000,
+          "target_season": 2024
+        }
+      },
+      "training_metrics": {
+        "has_global_training": true
+      },
+      "evaluation_metrics": {},
+      "files": {
+        "csv_files": [],
+        "log": "training.log",
+        "models": []
+      }
+    },
+    {
+      "run_id": "run_20251110_123541",
+      "run_path": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251110_123541",
+      "timestamp": null,
+      "config": {
+        "data": {
+          "data_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/data/processed",
+          "league": "Bundesliga",
+          "pattern": "Bundesliga_*.csv"
+        },
+        "environment": {
+          "bet_amount": 10.0,
+          "confidence_threshold": 0.6,
+          "min_gameday": 4,
+          "reward_shaping": "roi",
+          "use_betting_odds": true
+        },
+        "model": {
+          "algorithm": "DQN",
+          "dqn": {
+            "batch_size": 64,
+            "buffer_size": 100000,
+            "exploration_final_eps": 0.02,
+            "exploration_fraction": 0.3,
+            "exploration_initial_eps": 1.0,
+            "gamma": 0.95,
+            "learning_rate": 0.0001,
+            "learning_rate_finetune": 1e-05,
+            "learning_rate_incremental": 5e-06,
+            "learning_starts": 5000,
+            "target_update_interval": 500,
+            "tau": 1.0
+          },
+          "policy_kwargs": {
+            "net_arch": [
+              256,
+              256,
+              128
+            ]
+          }
+        },
+        "paths": {
+          "checkpoints_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251110_123541/checkpoints",
+          "data_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/data/processed",
+          "logs_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251110_123541/logs",
+          "models_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251110_123541/models",
+          "results_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251110_123541/results"
+        },
+        "training": {
+          "fine_tune_gamedays": 9,
+          "finetune_timesteps": 50000,
+          "global_seasons": {
+            "end": 2023,
+            "start": 2016
+          },
+          "global_timesteps": 500000,
+          "incremental_frequency": 1,
+          "incremental_learning": true,
+          "incremental_timesteps": 5000,
+          "target_season": 2024
+        }
+      },
+      "training_metrics": {},
+      "evaluation_metrics": {},
+      "files": {
+        "csv_files": [],
+        "models": []
+      }
+    },
+    {
+      "run_id": "run_20251114_145922",
+      "run_path": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251114_145922",
+      "timestamp": null,
+      "config": {
+        "data": {
+          "data_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/data/processed",
+          "league": "Bundesliga",
+          "pattern": "Bundesliga_*.csv"
+        },
+        "environment": {
+          "bet_amount": 10.0,
+          "confidence_threshold": 0.6,
+          "draw_penalty_multiplier": 1.5,
+          "kelly_fraction": 0.25,
+          "max_bet_amount": 30.0,
+          "max_bet_rate": 0.4,
+          "min_edge_required": 0.02,
+          "min_gameday": 4,
+          "no_bet_reward_multiplier": 0.5,
+          "reward_shaping": "conservative",
+          "use_betting_odds": true,
+          "use_kelly_criterion": true
+        },
+        "model": {
+          "algorithm": "DQN",
+          "dqn": {
+            "batch_size": 64,
+            "buffer_size": 100000,
+            "exploration_final_eps": 0.02,
+            "exploration_fraction": 0.3,
+            "exploration_initial_eps": 1.0,
+            "gamma": 0.95,
+            "learning_rate": 0.0001,
+            "learning_rate_finetune": 1e-05,
+            "learning_rate_incremental": 5e-06,
+            "learning_starts": 5000,
+            "target_update_interval": 500,
+            "tau": 1.0
+          },
+          "policy_kwargs": {
+            "net_arch": [
+              256,
+              256,
+              128
+            ]
+          }
+        },
+        "paths": {
+          "checkpoints_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251114_145922/checkpoints",
+          "data_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/data/processed",
+          "logs_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251114_145922/logs",
+          "models_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251114_145922/models",
+          "results_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251114_145922/results"
+        },
+        "training": {
+          "fine_tune_gamedays": 8,
+          "finetune_timesteps": 100000,
+          "global_seasons": {
+            "end": 2023,
+            "start": 2016
+          },
+          "global_timesteps": 1000000,
+          "incremental_frequency": 1,
+          "incremental_learning": true,
+          "incremental_timesteps": 5000,
+          "target_season": 2024
+        }
+      },
+      "training_metrics": {
+        "has_global_training": true
+      },
+      "evaluation_metrics": {},
+      "files": {
+        "csv_files": [],
+        "log": "training.log",
+        "models": []
+      }
+    },
+    {
+      "run_id": "run_20251110_142609",
+      "run_path": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251110_142609",
+      "timestamp": null,
+      "config": {
+        "data": {
+          "data_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/data/processed",
+          "league": "Bundesliga",
+          "pattern": "Bundesliga_*.csv"
+        },
+        "environment": {
+          "bet_amount": 10.0,
+          "confidence_threshold": 0.8,
+          "draw_penalty_multiplier": 1.5,
+          "max_bet_rate": 0.6,
+          "min_edge_required": 0.02,
+          "min_gameday": 4,
+          "no_bet_reward_multiplier": 0.5,
+          "reward_shaping": "conservative",
+          "use_betting_odds": true,
+          "use_kelly_criterion": true
+        },
+        "model": {
+          "algorithm": "DQN",
+          "dqn": {
+            "batch_size": 64,
+            "buffer_size": 100000,
+            "exploration_final_eps": 0.02,
+            "exploration_fraction": 0.3,
+            "exploration_initial_eps": 1.0,
+            "gamma": 0.95,
+            "learning_rate": 0.0001,
+            "learning_rate_finetune": 1e-05,
+            "learning_rate_incremental": 5e-06,
+            "learning_starts": 5000,
+            "target_update_interval": 500,
+            "tau": 1.0
+          },
+          "policy_kwargs": {
+            "net_arch": [
+              256,
+              256,
+              128
+            ]
+          }
+        },
+        "paths": {
+          "checkpoints_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251110_142609/checkpoints",
+          "data_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/data/processed",
+          "logs_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251110_142609/logs",
+          "models_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251110_142609/models",
+          "results_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251110_142609/results"
+        },
+        "training": {
+          "fine_tune_gamedays": 9,
+          "finetune_timesteps": 100000,
+          "global_seasons": {
+            "end": 2023,
+            "start": 2016
+          },
+          "global_timesteps": 1000000,
+          "incremental_frequency": 1,
+          "incremental_learning": true,
+          "incremental_timesteps": 5000,
+          "target_season": 2024
+        }
+      },
+      "training_metrics": {
+        "has_global_training": true
+      },
+      "evaluation_metrics": {},
+      "files": {
+        "csv_files": [],
+        "log": "training.log",
+        "models": []
+      }
+    },
+    {
+      "run_id": "run_20251110_134627",
+      "run_path": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251110_134627",
+      "timestamp": null,
+      "config": {
+        "data": {
+          "data_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/data/processed",
+          "league": "Bundesliga",
+          "pattern": "Bundesliga_*.csv"
+        },
+        "environment": {
+          "bet_amount": 10.0,
+          "confidence_threshold": 0.7,
+          "draw_penalty_multiplier": 1.5,
+          "max_bet_rate": 0.3,
+          "min_edge_required": 0.05,
+          "min_gameday": 4,
+          "no_bet_reward_multiplier": 0.5,
+          "reward_shaping": "conservative",
+          "use_betting_odds": true,
+          "use_kelly_criterion": true
+        },
+        "model": {
+          "algorithm": "DQN",
+          "dqn": {
+            "batch_size": 64,
+            "buffer_size": 100000,
+            "exploration_final_eps": 0.02,
+            "exploration_fraction": 0.3,
+            "exploration_initial_eps": 1.0,
+            "gamma": 0.95,
+            "learning_rate": 0.0001,
+            "learning_rate_finetune": 1e-05,
+            "learning_rate_incremental": 5e-06,
+            "learning_starts": 5000,
+            "target_update_interval": 500,
+            "tau": 1.0
+          },
+          "policy_kwargs": {
+            "net_arch": [
+              256,
+              256,
+              128
+            ]
+          }
+        },
+        "paths": {
+          "checkpoints_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251110_134627/checkpoints",
+          "data_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/data/processed",
+          "logs_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251110_134627/logs",
+          "models_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251110_134627/models",
+          "results_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251110_134627/results"
+        },
+        "training": {
+          "fine_tune_gamedays": 9,
+          "finetune_timesteps": 50000,
+          "global_seasons": {
+            "end": 2023,
+            "start": 2016
+          },
+          "global_timesteps": 500000,
+          "incremental_frequency": 1,
+          "incremental_learning": true,
+          "incremental_timesteps": 5000,
+          "target_season": 2024
+        }
+      },
+      "training_metrics": {
+        "has_global_training": true
+      },
+      "evaluation_metrics": {},
+      "files": {
+        "csv_files": [],
+        "log": "training.log",
+        "models": []
+      }
+    },
+    {
+      "run_id": "run_20251110_123653",
+      "run_path": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251110_123653",
+      "timestamp": null,
+      "config": {
+        "data": {
+          "data_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/data/processed",
+          "league": "Bundesliga",
+          "pattern": "Bundesliga_*.csv"
+        },
+        "environment": {
+          "bet_amount": 10.0,
+          "confidence_threshold": 0.6,
+          "min_gameday": 4,
+          "reward_shaping": "roi",
+          "use_betting_odds": true
+        },
+        "model": {
+          "algorithm": "DQN",
+          "dqn": {
+            "batch_size": 64,
+            "buffer_size": 100000,
+            "exploration_final_eps": 0.02,
+            "exploration_fraction": 0.3,
+            "exploration_initial_eps": 1.0,
+            "gamma": 0.95,
+            "learning_rate": 0.0001,
+            "learning_rate_finetune": 1e-05,
+            "learning_rate_incremental": 5e-06,
+            "learning_starts": 5000,
+            "target_update_interval": 500,
+            "tau": 1.0
+          },
+          "policy_kwargs": {
+            "net_arch": [
+              256,
+              256,
+              128
+            ]
+          }
+        },
+        "paths": {
+          "checkpoints_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251110_123653/checkpoints",
+          "data_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/data/processed",
+          "logs_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251110_123653/logs",
+          "models_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251110_123653/models",
+          "results_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251110_123653/results"
+        },
+        "training": {
+          "fine_tune_gamedays": 9,
+          "finetune_timesteps": 50000,
+          "global_seasons": {
+            "end": 2023,
+            "start": 2016
+          },
+          "global_timesteps": 500000,
+          "incremental_frequency": 1,
+          "incremental_learning": true,
+          "incremental_timesteps": 5000,
+          "target_season": 2024
+        }
+      },
+      "training_metrics": {},
+      "evaluation_metrics": {},
+      "files": {
+        "csv_files": [],
+        "models": []
+      }
+    },
+    {
+      "run_id": "run_20251114_164724",
+      "run_path": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251114_164724",
+      "timestamp": "20251114_172509",
+      "config": {
+        "data": {
+          "data_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/data/processed",
+          "league": "Bundesliga",
+          "pattern": "Bundesliga_*.csv"
+        },
+        "environment": {
+          "bet_amount": 10.0,
+          "confidence_threshold": 0.6,
+          "draw_penalty_multiplier": 1.5,
+          "kelly_fraction": 0.25,
+          "max_bet_amount": 30.0,
+          "max_bet_rate": 0.4,
+          "min_edge_required": 0.02,
+          "min_gameday": 4,
+          "no_bet_reward_multiplier": 0.5,
+          "reward_shaping": "conservative",
+          "use_betting_odds": true,
+          "use_kelly_criterion": true
+        },
+        "model": {
+          "algorithm": "DQN",
+          "dqn": {
+            "batch_size": 64,
+            "buffer_size": 100000,
+            "exploration_final_eps": 0.02,
+            "exploration_fraction": 0.3,
+            "exploration_initial_eps": 1.0,
+            "gamma": 0.95,
+            "learning_rate": 0.0001,
+            "learning_rate_finetune": 1e-05,
+            "learning_rate_incremental": 5e-06,
+            "learning_starts": 5000,
+            "target_update_interval": 500,
+            "tau": 1.0
+          },
+          "policy_kwargs": {
+            "net_arch": [
+              256,
+              256,
+              128
+            ]
+          }
+        },
+        "paths": {
+          "checkpoints_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251114_164724/checkpoints",
+          "data_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/data/processed",
+          "logs_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251114_164724/logs",
+          "models_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251114_164724/models",
+          "results_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251114_164724/results"
+        },
+        "training": {
+          "fine_tune_gamedays": 8,
+          "finetune_timesteps": 100000,
+          "global_seasons": {
+            "end": 2023,
+            "start": 2016
+          },
+          "global_timesteps": 1000000,
+          "incremental_frequency": 1,
+          "incremental_learning": true,
+          "incremental_timesteps": 5000,
+          "target_season": 2024
+        }
+      },
+      "training_metrics": {
+        "has_global_training": true,
+        "has_finetuning": true
+      },
+      "evaluation_metrics": {
+        "final_roi": -0.1174946781912994,
+        "final_winrate": 0.5645161290322581,
+        "total_bets": 62,
+        "total_wins": 35,
+        "total_profit": -82.24039999999998,
+        "final_balance": 0.0,
+        "gamedays_played": 26,
+        "sharpe_ratio": -0.24051276605190283,
+        "max_drawdown": 88.47330000000002
+      },
+      "files": {
+        "excel": "evaluation_2024_20251114_172509.xlsx",
+        "csv_files": [
+          "gameday_results_2024_20251114_172509.csv"
+        ],
+        "log": "training.log",
+        "models": [
+          "global_model_2024.zip",
+          "finetuned_model_2024.zip"
+        ]
+      }
+    },
+    {
+      "run_id": "run_20251110_135340",
+      "run_path": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251110_135340",
+      "timestamp": "20251110_141241",
+      "config": {
+        "data": {
+          "data_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/data/processed",
+          "league": "Bundesliga",
+          "pattern": "Bundesliga_*.csv"
+        },
+        "environment": {
+          "bet_amount": 10.0,
+          "confidence_threshold": 0.7,
+          "draw_penalty_multiplier": 1.5,
+          "max_bet_rate": 0.3,
+          "min_edge_required": 0.05,
+          "min_gameday": 4,
+          "no_bet_reward_multiplier": 0.5,
+          "reward_shaping": "conservative",
+          "use_betting_odds": true,
+          "use_kelly_criterion": true
+        },
+        "model": {
+          "algorithm": "DQN",
+          "dqn": {
+            "batch_size": 64,
+            "buffer_size": 100000,
+            "exploration_final_eps": 0.02,
+            "exploration_fraction": 0.3,
+            "exploration_initial_eps": 1.0,
+            "gamma": 0.95,
+            "learning_rate": 0.0001,
+            "learning_rate_finetune": 1e-05,
+            "learning_rate_incremental": 5e-06,
+            "learning_starts": 5000,
+            "target_update_interval": 500,
+            "tau": 1.0
+          },
+          "policy_kwargs": {
+            "net_arch": [
+              256,
+              256,
+              128
+            ]
+          }
+        },
+        "paths": {
+          "checkpoints_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251110_135340/checkpoints",
+          "data_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/data/processed",
+          "logs_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251110_135340/logs",
+          "models_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251110_135340/models",
+          "results_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251110_135340/results"
+        },
+        "training": {
+          "fine_tune_gamedays": 9,
+          "finetune_timesteps": 50000,
+          "global_seasons": {
+            "end": 2023,
+            "start": 2016
+          },
+          "global_timesteps": 500000,
+          "incremental_frequency": 1,
+          "incremental_learning": true,
+          "incremental_timesteps": 5000,
+          "target_season": 2024
+        }
+      },
+      "training_metrics": {
+        "has_global_training": true,
+        "has_finetuning": true
+      },
+      "evaluation_metrics": {
+        "final_roi": -0.243421052631579,
+        "final_winrate": 0.4473684210526316,
+        "total_bets": 76,
+        "total_wins": 34,
+        "total_profit": -185.0,
+        "final_balance": 0.0,
+        "gamedays_played": 25,
+        "sharpe_ratio": -0.42619035674715283,
+        "max_drawdown": 211.1
+      },
+      "files": {
+        "excel": "evaluation_2024_20251110_141241.xlsx",
+        "csv_files": [
+          "gameday_results_2024_20251110_141241.csv"
+        ],
+        "log": "training.log",
+        "models": [
+          "global_model_2024.zip",
+          "finetuned_model_2024.zip"
+        ]
+      }
+    },
+    {
+      "run_id": "run_20251115_174959",
+      "run_path": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251115_174959",
+      "timestamp": null,
+      "config": {
+        "data": {
+          "data_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/data/processed",
+          "league": "Bundesliga",
+          "pattern": "Bundesliga_*.csv"
+        },
+        "environment": {
+          "bet_amount": 10.0,
+          "confidence_threshold": 0.6,
+          "draw_penalty_multiplier": 1.5,
+          "kelly_fraction": 0.5,
+          "max_bet_amount": 30.0,
+          "max_bet_rate": 0.5,
+          "min_edge_required": 0.05,
+          "min_gameday": 4,
+          "no_bet_reward_multiplier": 0.5,
+          "reward_shaping": "conservative",
+          "use_betting_odds": true,
+          "use_kelly_criterion": true
+        },
+        "model": {
+          "algorithm": "DQN",
+          "dqn": {
+            "batch_size": 64,
+            "buffer_size": 100000,
+            "exploration_final_eps": 0.02,
+            "exploration_fraction": 0.3,
+            "exploration_initial_eps": 1.0,
+            "gamma": 0.95,
+            "learning_rate": 0.0001,
+            "learning_rate_finetune": 1e-05,
+            "learning_rate_incremental": 5e-06,
+            "learning_starts": 5000,
+            "target_update_interval": 500,
+            "tau": 1.0
+          },
+          "policy_kwargs": {
+            "net_arch": [
+              256,
+              256,
+              128
+            ]
+          }
+        },
+        "paths": {
+          "checkpoints_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251115_174959/checkpoints",
+          "data_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/data/processed",
+          "logs_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251115_174959/logs",
+          "models_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251115_174959/models",
+          "results_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251115_174959/results"
+        },
+        "training": {
+          "fine_tune_gamedays": 12,
+          "finetune_timesteps": 100000,
+          "global_seasons": {
+            "end": 2023,
+            "start": 2016
+          },
+          "global_timesteps": 1000000,
+          "incremental_frequency": 1,
+          "incremental_learning": false,
+          "incremental_timesteps": 5000,
+          "target_season": 2024
+        }
+      },
+      "training_metrics": {
+        "has_global_training": true,
+        "has_finetuning": true
+      },
+      "evaluation_metrics": {},
+      "files": {
+        "csv_files": [],
+        "log": "training.log",
+        "models": [
+          "global_model_2024.zip",
+          "finetuned_model_2024.zip"
+        ]
+      }
+    },
+    {
+      "run_id": "run_20251110_150007",
+      "run_path": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251110_150007",
+      "timestamp": "20251110_151926",
+      "config": {
+        "data": {
+          "data_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/data/processed",
+          "league": "Bundesliga",
+          "pattern": "Bundesliga_*.csv"
+        },
+        "environment": {
+          "bet_amount": 10.0,
+          "confidence_threshold": 0.6,
+          "draw_penalty_multiplier": 1.5,
+          "max_bet_rate": 0.6,
+          "min_edge_required": 0.02,
+          "min_gameday": 4,
+          "no_bet_reward_multiplier": 0.5,
+          "reward_shaping": "conservative",
+          "use_betting_odds": true,
+          "use_kelly_criterion": true
+        },
+        "model": {
+          "algorithm": "DQN",
+          "dqn": {
+            "batch_size": 64,
+            "buffer_size": 100000,
+            "exploration_final_eps": 0.02,
+            "exploration_fraction": 0.3,
+            "exploration_initial_eps": 1.0,
+            "gamma": 0.95,
+            "learning_rate": 0.0001,
+            "learning_rate_finetune": 1e-05,
+            "learning_rate_incremental": 5e-06,
+            "learning_starts": 5000,
+            "target_update_interval": 500,
+            "tau": 1.0
+          },
+          "policy_kwargs": {
+            "net_arch": [
+              256,
+              256,
+              128
+            ]
+          }
+        },
+        "paths": {
+          "checkpoints_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251110_150007/checkpoints",
+          "data_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/data/processed",
+          "logs_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251110_150007/logs",
+          "models_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251110_150007/models",
+          "results_dir": "/Users/henrylukewille/Desktop/Betting_Agent_WebApp/runs/run_20251110_150007/results"
+        },
+        "training": {
+          "fine_tune_gamedays": 9,
+          "finetune_timesteps": 100000,
+          "global_seasons": {
+            "end": 2023,
+            "start": 2016
+          },
+          "global_timesteps": 500000,
+          "incremental_frequency": 1,
+          "incremental_learning": true,
+          "incremental_timesteps": 5000,
+          "target_season": 2024
+        }
+      },
+      "training_metrics": {
+        "has_global_training": true,
+        "has_finetuning": true
+      },
+      "evaluation_metrics": {
+        "final_roi": -0.0300662251655629,
+        "final_winrate": 0.4768211920529801,
+        "total_bets": 151,
+        "total_wins": 72,
+        "total_profit": -45.39999999999998,
+        "final_balance": 0.0,
+        "gamedays_played": 25,
+        "sharpe_ratio": -0.0593170775246887,
+        "max_drawdown": 167.2
+      },
+      "files": {
+        "excel": "evaluation_2024_20251110_151926.xlsx",
+        "csv_files": [
+          "gameday_results_2024_20251110_151926.csv"
+        ],
+        "log": "training.log",
+        "models": [
+          "global_model_2024.zip",
+          "finetuned_model_2024.zip"
+        ]
+      }
+    }
+  ],
+  "meta_tests": []
+}

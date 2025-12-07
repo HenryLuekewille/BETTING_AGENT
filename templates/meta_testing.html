@@ -1,0 +1,741 @@
+{% extends "base.html" %}
+
+{% block title %}Meta Testing - Betting Agent{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Meta Testing Specific Styles */
+.meta-hero {
+    background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%);
+    padding: 50px 40px;
+    border-radius: 16px;
+    margin-bottom: 40px;
+    border: 2px solid #a78bfa;
+    text-align: center;
+}
+
+.meta-hero h1 {
+    font-size: 2.5em;
+    margin-bottom: 15px;
+    color: white;
+}
+
+.meta-hero p {
+    font-size: 1.2em;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.test-mode-selector {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin: 30px 0;
+}
+
+.test-mode-card {
+    background: var(--bg-dark);
+    padding: 30px;
+    border-radius: 12px;
+    border: 2px solid var(--border);
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.test-mode-card:hover {
+    border-color: #7c3aed;
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(124, 58, 237, 0.3);
+}
+
+.test-mode-card.selected {
+    border-color: #7c3aed;
+    background: rgba(124, 58, 237, 0.1);
+}
+
+.test-mode-icon {
+    font-size: 3em;
+    margin-bottom: 15px;
+}
+
+.test-mode-card h4 {
+    color: #a78bfa;
+    margin-bottom: 10px;
+    font-size: 1.3em;
+}
+
+.test-mode-card p {
+    color: var(--text-secondary);
+    font-size: 0.95em;
+}
+
+.test-mode-card .badge {
+    margin-top: 10px;
+}
+
+.parameter-preview {
+    background: var(--bg-dark);
+    padding: 25px;
+    border-radius: 12px;
+    border-left: 4px solid #7c3aed;
+    margin: 30px 0;
+}
+
+.parameter-preview h4 {
+    color: #a78bfa;
+    margin-bottom: 20px;
+    font-size: 1.2em;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.parameter-preview .new-badge {
+    background: #10b981;
+    color: white;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 0.75em;
+    font-weight: 700;
+}
+
+.param-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.param-item {
+    background: rgba(124, 58, 237, 0.05);
+    padding: 15px;
+    border-radius: 8px;
+}
+
+.param-item strong {
+    display: block;
+    color: var(--text-secondary);
+    font-size: 0.9em;
+    margin-bottom: 5px;
+}
+
+.param-item span {
+    color: #a78bfa;
+    font-size: 1.1em;
+    font-weight: 600;
+}
+
+.param-explanation {
+    background: rgba(124, 58, 237, 0.1);
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 15px;
+    border: 1px solid #7c3aed;
+}
+
+.param-explanation h5 {
+    color: #a78bfa;
+    margin-bottom: 10px;
+    font-size: 1em;
+}
+
+.param-explanation ul {
+    margin-left: 20px;
+    line-height: 1.8;
+}
+
+.param-explanation li {
+    color: var(--text-secondary);
+    margin-bottom: 5px;
+}
+
+.results-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    margin-top: 30px;
+}
+
+.result-card {
+    background: var(--bg-dark);
+    padding: 20px;
+    border-radius: 12px;
+    border: 2px solid var(--border);
+    transition: all 0.3s ease;
+}
+
+.result-card:hover {
+    border-color: #7c3aed;
+    transform: translateY(-3px);
+}
+
+.result-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--border);
+}
+
+.result-id {
+    font-family: 'Courier New', monospace;
+    color: #a78bfa;
+    font-size: 0.9em;
+}
+
+.result-status {
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.85em;
+    font-weight: 600;
+}
+
+.status-running {
+    background: var(--warning);
+    color: white;
+}
+
+.status-completed {
+    background: var(--success);
+    color: white;
+}
+
+.status-failed {
+    background: var(--danger);
+    color: white;
+}
+
+.result-metrics {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.metric {
+    text-align: center;
+}
+
+.metric-label {
+    font-size: 0.85em;
+    color: var(--text-secondary);
+    margin-bottom: 5px;
+}
+
+.metric-value {
+    font-size: 1.5em;
+    font-weight: 700;
+}
+
+.metric-value.positive {
+    color: var(--success);
+}
+
+.metric-value.negative {
+    color: var(--danger);
+}
+
+.progress-indicator {
+    margin: 30px 0;
+    padding: 25px;
+    background: rgba(124, 58, 237, 0.05);
+    border-radius: 12px;
+    border: 2px solid #7c3aed;
+}
+
+.progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.progress-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.progress-stat {
+    text-align: center;
+    padding: 15px;
+    background: var(--bg-dark);
+    border-radius: 8px;
+}
+
+.progress-stat-value {
+    font-size: 2em;
+    font-weight: 700;
+    color: #a78bfa;
+}
+
+.progress-stat-label {
+    font-size: 0.9em;
+    color: var(--text-secondary);
+    margin-top: 5px;
+}
+
+/* Comparison Table */
+.comparison-table {
+    margin: 30px 0;
+    overflow-x: auto;
+}
+
+.comparison-table table {
+    width: 100%;
+    background: var(--bg-dark);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.comparison-table th {
+    background: #7c3aed;
+    color: white;
+    padding: 15px;
+    text-align: left;
+    font-weight: 600;
+}
+
+.comparison-table td {
+    padding: 12px 15px;
+    border-bottom: 1px solid var(--border);
+}
+
+.comparison-table tr:hover {
+    background: rgba(124, 58, 237, 0.05);
+}
+
+.comparison-table .highlight {
+    background: rgba(16, 185, 129, 0.1);
+    font-weight: 600;
+    color: var(--success);
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- ===================================================================
+     HERO SECTION
+     =================================================================== -->
+<div class="meta-hero">
+    <h1>🔬 Meta Testing System</h1>
+    <p>
+        Umfassende Parameter-Tests zur Optimierung der Betting-Strategie<br>
+        ✅ Kelly Criterion | ✅ Confidence Scaling | ✅ Fine-Tune Timing | ✅ Model Ensemble
+    </p>
+</div>
+
+<!-- ===================================================================
+     TEST MODE SELECTION
+     =================================================================== -->
+<div class="card">
+    <h2>📊 Test-Modus auswählen</h2>
+    <p>Wähle die Intensität der Parameter-Tests:</p>
+    
+    <div class="test-mode-selector">
+        <div class="test-mode-card" onclick="selectTestMode('quick')" id="mode-quick">
+            <div class="test-mode-icon">⚡</div>
+            <h4>Quick Test</h4>
+            <p>~50-100 Kombinationen<br>Schneller Überblick</p>
+            <span class="badge info">~2-4 Stunden</span>
+        </div>
+        
+        <div class="test-mode-card selected" onclick="selectTestMode('balanced')" id="mode-balanced">
+            <div class="test-mode-icon">⚖️</div>
+            <h4>Balanced Test</h4>
+            <p>~300-500 Kombinationen<br>Guter Kompromiss</p>
+            <span class="badge warning">~8-12 Stunden</span>
+        </div>
+        
+        <div class="test-mode-card" onclick="selectTestMode('comprehensive')" id="mode-comprehensive">
+            <div class="test-mode-icon">🔬</div>
+            <h4>Comprehensive Test</h4>
+            <p>Alle Kombinationen<br>Maximale Genauigkeit</p>
+            <span class="badge danger">~24+ Stunden</span>
+        </div>
+    </div>
+</div>
+
+<!-- ===================================================================
+     GETESTETE PARAMETER (ERWEITERT)
+     =================================================================== -->
+<div class="card">
+    <h3>🎯 Getestete Parameter</h3>
+    <p>Diese Parameter werden in verschiedenen Kombinationen getestet:</p>
+    
+    <!-- ===== NEU: FINE-TUNE GAMEDAYS ===== -->
+    <div class="parameter-preview">
+        <h4>
+            📅 Fine-Tune Starting Point 
+            <span class="new-badge">NEU!</span>
+        </h4>
+        <div class="param-grid">
+            <div class="param-item">
+                <strong>Gamedays Optionen</strong>
+                <span>4 / 8 / 12 / 16</span>
+            </div>
+            <div class="param-item">
+                <strong>Frage</strong>
+                <span>Wann Deployment starten?</span>
+            </div>
+            <div class="param-item">
+                <strong>Trade-off</strong>
+                <span>Mehr Daten vs. Mehr Spieltage</span>
+            </div>
+            <div class="param-item">
+                <strong>Metriken</strong>
+                <span>Total ROI & ROI/Gameday</span>
+            </div>
+        </div>
+        
+        <div class="param-explanation">
+            <h5>💡 Warum wichtig?</h5>
+            <ul>
+                <li><strong>GD 4:</strong> Wenig Saison-Daten, aber 30 Spieltage zum Wetten → Hohe Unsicherheit</li>
+                <li><strong>GD 8:</strong> Moderate Daten, 26 Spieltage → Gute Balance (Sweet Spot?)</li>
+                <li><strong>GD 12:</strong> Viele Daten, 22 Spieltage → Hohe Stabilität, aber weniger Opportunities</li>
+                <li><strong>GD 16:</strong> Sehr viele Daten, nur 18 Spieltage → Maximum Sicherheit</li>
+            </ul>
+            <p style="margin-top: 10px; padding: 10px; background: rgba(124, 58, 237, 0.1); border-radius: 6px;">
+                <strong>📊 Ziel:</strong> Finde den optimalen Balance-Point zwischen Daten-Qualität und verfügbaren Spieltagen!
+            </p>
+        </div>
+    </div>
+    
+    <!-- ===== NEU: MODEL ENSEMBLE WEIGHTS ===== -->
+    <div class="parameter-preview">
+        <h4>
+            ⚖️ Model Ensemble Weights 
+            <span class="new-badge">NEU!</span>
+        </h4>
+        <div class="param-grid">
+            <div class="param-item">
+                <strong>Weight Kombinationen</strong>
+                <span>9 Optionen (0.0 - 1.0)</span>
+            </div>
+            <div class="param-item">
+                <strong>Pure Global</strong>
+                <span>1.0 / 0.0</span>
+            </div>
+            <div class="param-item">
+                <strong>Balanced</strong>
+                <span>0.5 / 0.5</span>
+            </div>
+            <div class="param-item">
+                <strong>Pure Finetune</strong>
+                <span>0.0 / 1.0</span>
+            </div>
+        </div>
+        
+        <div class="param-explanation">
+            <h5>💡 Warum wichtig?</h5>
+            <ul>
+                <li><strong>Global Model:</strong> Generalisiertes Wissen über mehrere Saisons (2016-2023)</li>
+                <li><strong>Fine-Tuned Model:</strong> Spezialisiert auf aktuelle Saison (z.B. 2024)</li>
+                <li><strong>Ensemble:</strong> Kombiniert Stärken beider Modelle → Oft besser als einzelne!</li>
+            </ul>
+            
+            <div class="comparison-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Weight Mix</th>
+                            <th>Global</th>
+                            <th>Finetune</th>
+                            <th>Charakteristik</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Pure Global</strong></td>
+                            <td>1.0</td>
+                            <td>0.0</td>
+                            <td>Robustness, aber nicht season-specific</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Global-Dominant</strong></td>
+                            <td>0.8</td>
+                            <td>0.2</td>
+                            <td>Starke Generalisierung + leichte Adaption</td>
+                        </tr>
+                        <tr class="highlight">
+                            <td><strong>Balanced</strong></td>
+                            <td>0.5</td>
+                            <td>0.5</td>
+                            <td>Beste Balance (Sweet Spot?)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Finetune-Dominant</strong></td>
+                            <td>0.2</td>
+                            <td>0.8</td>
+                            <td>Stark auf Saison fokussiert</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Pure Finetune</strong></td>
+                            <td>0.0</td>
+                            <td>1.0</td>
+                            <td>Maximum Adaption, Risiko: Overfitting</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <p style="margin-top: 10px; padding: 10px; background: rgba(124, 58, 237, 0.1); border-radius: 6px;">
+                <strong>🧠 Hypothese:</strong> Optimum wahrscheinlich bei 0.5-0.7 Global Weight, abhängig von Fine-Tune Gamedays!
+            </p>
+        </div>
+    </div>
+    
+    <!-- ===== CONFIDENCE SCALING ===== -->
+    <div class="parameter-preview">
+        <h4>🆕 Confidence-Based Bet Scaling</h4>
+        <div class="param-grid">
+            <div class="param-item">
+                <strong>Scaling Mode</strong>
+                <span>none / linear / quadratic / threshold</span>
+            </div>
+            <div class="param-item">
+                <strong>Base Bet</strong>
+                <span>10€</span>
+            </div>
+            <div class="param-item">
+                <strong>Max Bet Range</strong>
+                <span>10€ - 50€</span>
+            </div>
+            <div class="param-item">
+                <strong>Effekt</strong>
+                <span>Dynamische Bet Size basierend auf Win-Probability</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- ===== KELLY CRITERION ===== -->
+    <div class="parameter-preview">
+        <h4>💰 Kelly Criterion + Bet Sizing</h4>
+        <div class="param-grid">
+            <div class="param-item">
+                <strong>Use Kelly</strong>
+                <span>True / False</span>
+            </div>
+            <div class="param-item">
+                <strong>Kelly Fraction</strong>
+                <span>0.10 / 0.15 / 0.25 / 0.35</span>
+            </div>
+            <div class="param-item">
+                <strong>Max Bet</strong>
+                <span>10€ / 20€ / 30€ / 50€</span>
+            </div>
+            <div class="param-item">
+                <strong>Formel</strong>
+                <span>f* = (bp - q) / b</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- ===== REWARD SHAPING ===== -->
+    <div class="parameter-preview">
+        <h4>🎮 Reward Shaping</h4>
+        <div class="param-grid">
+            <div class="param-item">
+                <strong>No-Bet Multiplier</strong>
+                <span>0.3 - 0.9</span>
+            </div>
+            <div class="param-item">
+                <strong>Draw Penalty</strong>
+                <span>1.0 - 2.0</span>
+            </div>
+            <div class="param-item">
+                <strong>Reward Mode</strong>
+                <span>conservative / balanced / aggressive</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- ===== BETTING LOGIC ===== -->
+    <div class="parameter-preview">
+        <h4>🎯 Betting Logic</h4>
+        <div class="param-grid">
+            <div class="param-item">
+                <strong>Confidence Threshold</strong>
+                <span>0.55 / 0.60 / 0.65 / 0.70</span>
+            </div>
+            <div class="param-item">
+                <strong>Min Edge Required</strong>
+                <span>0.00 / 0.02 / 0.05 / 0.08</span>
+            </div>
+            <div class="param-item">
+                <strong>Max Bet Rate</strong>
+                <span>25% / 30% / 40% / 50%</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- ===== MULTI-SEASON ROBUSTNESS ===== -->
+    <div class="parameter-preview">
+        <h4>📅 Multi-Season Testing (Robustheit)</h4>
+        <div class="param-grid">
+            <div class="param-item">
+                <strong>Target Seasons</strong>
+                <span>2022, 2023, 2024</span>
+            </div>
+            <div class="param-item">
+                <strong>Seeds pro Config</strong>
+                <span>3-5 Seeds</span>
+            </div>
+            <div class="param-item">
+                <strong>Robustness Check</strong>
+                <span>CV < 0.5</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===================================================================
+     START BUTTON
+     =================================================================== -->
+<div class="card">
+    <h3>🚀 Test starten</h3>
+    
+    <form id="meta-test-form" action="{{ url_for('api_start_meta_test') }}" method="POST">
+        <input type="hidden" name="mode" id="selected-mode" value="balanced">
+        
+        <div class="form-group">
+            <label for="max_experiments">Max. Anzahl Tests (optional):</label>
+            <input type="number" id="max_experiments" name="max_experiments" 
+                   placeholder="Leer lassen für alle Tests" min="10" step="10" class="form-control">
+            <small>Limitiere die Anzahl der Tests für schnellere Ergebnisse</small>
+        </div>
+        
+        <div class="alert alert-info" style="margin: 20px 0;">
+            <strong>ℹ️ Hinweis:</strong>
+            <p style="margin: 10px 0 0 0;">
+                Die Tests laufen im Hintergrund. Du kannst den Browser schließen und später wiederkommen.
+                Der Fortschritt wird automatisch gespeichert.
+            </p>
+        </div>
+        
+        <div class="button-group">
+            <button type="submit" class="btn-primary btn-large" id="start-btn">
+                🔬 Meta-Testing starten
+            </button>
+        </div>
+    </form>
+</div>
+
+<!-- ===================================================================
+     LIVE PROGRESS (HIDDEN INITIALLY)
+     =================================================================== -->
+<div class="card" id="progress-section" style="display: none;">
+    <div class="progress-indicator">
+        <div class="progress-header">
+            <h3 id="progress-title">⏳ Tests laufen...</h3>
+            <span id="progress-percentage" style="font-size: 1.5em; font-weight: 700; color: #a78bfa;">0%</span>
+        </div>
+        
+        <div class="progress-container">
+            <div class="progress-bar" id="meta-progress-bar" style="width: 0%">0%</div>
+        </div>
+        
+        <div class="progress-stats">
+            <div class="progress-stat">
+                <div class="progress-stat-value" id="stat-completed">0</div>
+                <div class="progress-stat-label">Abgeschlossen</div>
+            </div>
+            <div class="progress-stat">
+                <div class="progress-stat-value" id="stat-running">0</div>
+                <div class="progress-stat-label">Läuft</div>
+            </div>
+            <div class="progress-stat">
+                <div class="progress-stat-value" id="stat-failed">0</div>
+                <div class="progress-stat-label">Fehlgeschlagen</div>
+            </div>
+            <div class="progress-stat">
+                <div class="progress-stat-value" id="stat-total">0</div>
+                <div class="progress-stat-label">Gesamt</div>
+            </div>
+        </div>
+        
+        <p id="current-test" style="text-align: center; margin-top: 20px; color: var(--text-secondary);">
+            Initialisiere...
+        </p>
+    </div>
+</div>
+
+<!-- ===================================================================
+     LIVE LOG OUTPUT
+     =================================================================== -->
+<div class="card" id="log-container" style="display: none;">
+    <h3>📜 Live Meta-Test Log</h3>
+    <div class="log-output">
+        <pre id="meta-log-content">Warte auf Log-Ausgabe...</pre>
+    </div>
+    <div style="margin-top: 15px;">
+        <label style="display: inline-flex; align-items: center; gap: 10px; cursor: pointer;">
+            <input type="checkbox" id="meta-auto-scroll" checked style="width: 20px; height: 20px;">
+            <span>Auto-Scroll aktiviert</span>
+        </label>
+    </div>
+</div>
+
+<!-- ===================================================================
+     RESULTS GRID
+     =================================================================== -->
+<div class="card" id="results-section">
+    <h3>📈 Test-Ergebnisse</h3>
+    <p id="results-info">Keine laufenden oder abgeschlossenen Tests.</p>
+    
+    <div class="results-grid" id="results-grid">
+        <!-- Wird dynamisch gefüllt -->
+    </div>
+</div>
+
+<!-- ===================================================================
+     EXPECTED OUTCOMES SECTION
+     =================================================================== -->
+<div class="card">
+    <h3>🎯 Erwartete Erkenntnisse</h3>
+    <p>Nach Abschluss der Tests erhältst du Antworten auf:</p>
+    
+    <div class="parameter-preview">
+        <h4>📊 Hauptfragen</h4>
+        <ul style="line-height: 2; margin-left: 20px;">
+            <li><strong>Fine-Tune Timing:</strong> Wann ist der beste Zeitpunkt für Deployment? (GD 4, 8, 12, oder 16?)</li>
+            <li><strong>Model Ensemble:</strong> Welcher Mix aus Global + Finetune Model ist optimal?</li>
+            <li><strong>Kelly vs. Fixed:</strong> Ist Kelly Criterion besser als fixe Multiplikatoren?</li>
+            <li><strong>Confidence Scaling:</strong> Welcher Scaling-Modus bringt die beste Performance?</li>
+            <li><strong>Risk Profile:</strong> Conservative, Balanced, oder Aggressive - was funktioniert?</li>
+            <li><strong>Robustheit:</strong> Welche Configs sind über mehrere Saisons stabil?</li>
+        </ul>
+    </div>
+    
+    <div class="parameter-preview">
+        <h4>📁 Output-Dateien</h4>
+        <div class="param-grid">
+            <div class="param-item">
+                <strong>all_results.csv</strong>
+                <span>Alle Tests mit Metriken</span>
+            </div>
+            <div class="param-item">
+                <strong>top10_roi.xlsx</strong>
+                <span>Beste ROI-Configs</span>
+            </div>
+            <div class="param-item">
+                <strong>fine_tune_analysis.png</strong>
+                <span>Fine-Tune Gamedays Plots</span>
+            </div>
+            <div class="param-item">
+                <strong>model_weights_heatmap.png</strong>
+                <span>Ensemble Weights Heatmap</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/meta_testing.js') }}"></script>
+{% endblock %}

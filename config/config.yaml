@@ -1,0 +1,162 @@
+data:
+  data_dir: data/processed
+  download:
+    base_url: https://www.football-data.co.uk/mmz4281
+    seasons:
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
+  league: Bundesliga
+  pattern: Bundesliga_*.csv
+environment:
+  bet_amount: 10.0
+  confidence_threshold: 0.65
+  draw_penalty_multiplier: 1.5
+  kelly_fraction: 0.25
+  max_bet_amount: 10.0
+  max_bet_rate: 0.4
+  min_edge_required: 0.05
+  min_gameday: 4
+  no_bet_reward_multiplier: 0.5
+  reward_shaping: conservative
+  use_betting_odds: true
+  use_kelly_criterion: false
+evaluation:
+  plot_dpi: 150
+  save_csv: true
+  save_excel: true
+  save_plots: true
+features:
+  categories:
+  - description: Tor-bezogene Statistiken und Expected Goals
+    features:
+    - Goals_Home_L4
+    - Goals_Away_L4
+    - Conceded_Home_L4
+    - Conceded_Away_L4
+    - Expected_Goals
+    - Expected_Goals_Weighted
+    icon: ⚽
+    name: Goals & Scoring
+  - description: Kurzfristige Performance-Trends (L4-Window)
+    features:
+    - Points_Home_L4
+    - Points_Away_L4
+    - Points_Diff_L4
+    - Form_Ratio_L4
+    - Momentum_Home
+    - Momentum_Away
+    icon: 📈
+    name: Form & Momentum
+  - description: Quoten-basierte Edge-Indikatoren
+    features:
+    - MaxQuote_H
+    - MaxQuote_A
+    - ImpProb_H
+    - ImpProb_D
+    - ImpProb_A
+    - OU_Over
+    - OU_Under
+    - OU_Spread
+    - BookieMargin
+    - Value_Home
+    - Value_Away
+    icon: 💰
+    name: Value Indicators
+  - description: Kumulative Saison-Statistiken
+    features:
+    - Points_Home_Season
+    - Points_Away_Season
+    - Points_Total_Season
+    - Goals_Home_Season
+    - Goals_Away_Season
+    - GoalDiff_Home_Season
+    - GoalDiff_Away_Season
+    icon: 📅
+    name: Season Context
+  - description: Attack/Defense Ratios und Form-Vergleiche
+    features:
+    - Attack_Defense_Home_L4
+    - Attack_Defense_Away_L4
+    - Goal_Intensity_L4
+    - Draw_Risk
+    icon: 🎯
+    name: Advanced Metrics
+  - description: Fouls, Karten, Corners (Spielkontrolle)
+    features:
+    - Fouls_Home_L4
+    - Fouls_Away_L4
+    - Corners_Home_L4
+    - Corners_Away_L4
+    - Yellow_Home_L4
+    - Yellow_Away_L4
+    icon: 🟨
+    name: Discipline & Control
+  feature_count: 42
+  use_l4_focus: true
+logging:
+  format: '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+  level: INFO
+  save_to_file: true
+metadata:
+  config_version: 2.1-optimized
+  description: Optimierte Konfiguration basierend auf 34 Parameter Search Experimenten
+  expected_performance:
+    avg_bet_size: 10€ (konstant)
+    bet_rate: ~30% (90-120 Wetten/Saison)
+    max_drawdown: 70-110€
+    roi: +10% - +15%
+    sharpe_ratio: 0.20 - 0.30
+    winrate: 47% - 51%
+  last_updated: '2025-11-17'
+  optimization_basis: 'Experiment #9 (ROI: +14.32%) & #21 (ROI: +11.82%)'
+model:
+  algorithm: DQN
+  dqn:
+    batch_size: 64
+    buffer_size: 100000
+    exploration_final_eps: 0.02
+    exploration_fraction: 0.3
+    exploration_initial_eps: 1.0
+    gamma: 0.95
+    learning_rate: 0.0001
+    learning_rate_finetune: 1.0e-05
+    learning_rate_incremental: 5.0e-06
+    learning_starts: 5000
+    target_update_interval: 500
+    tau: 1.0
+  policy_kwargs:
+    net_arch:
+    - 256
+    - 256
+    - 128
+multi_agent:
+  agent_types:
+  - conservative
+  - balanced
+  - aggressive
+  enabled: false
+  ensemble_strategy: voting
+paths:
+  checkpoints_dir: runs/checkpoints
+  data_dir: data/processed
+  logs_dir: runs/logs
+  models_dir: runs/models
+  raw_data_dir: data/raw
+  results_dir: runs/results
+training:
+  fine_tune_gamedays: 4
+  finetune_timesteps: 100000
+  global_seasons:
+    end: 2023
+    start: 2016
+  global_timesteps: 1000000
+  incremental_learning: true
+  incremental_timesteps: 10000
+  target_season: 2025

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Betting Agent{% endblock %}</title>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <div class="container">
+        <!-- ===== HEADER ===== -->
+        <header>
+            <div class="header-content">
+                <h1>🤖 Betting Agent Web App</h1>
+                <p>Deep Reinforcement Learning für Sportwetten‑Vorhersagen</p>
+            </div>
+        </header>
+
+        <!-- ===== NEUE NAVIGATION ===== -->
+        <nav>
+            <!-- Schritt 1: Daten -->
+            <a href="{{ url_for('data_management') }}" 
+               class="{% if request.endpoint == 'data_management' %}active{% endif %}">
+                📊 Daten
+            </a>
+            
+            <!-- Schritt 2: Model & Features -->
+            <a href="{{ url_for('model_info') }}" 
+               class="{% if request.endpoint == 'model_info' %}active{% endif %}">
+                🧠 Model & Features
+            </a>
+            
+            <!-- Schritt 3: Training -->
+            <a href="{{ url_for('training_config') }}" 
+               class="{% if request.endpoint in ['training_config', 'single_agent_training', 'multi_agent_config'] %}active{% endif %}">
+                ⚙️ Training
+            </a>
+            
+            <!-- Schritt 4: Status -->
+            <a href="{{ url_for('status') }}" 
+               class="{% if request.endpoint == 'status' %}active{% endif %}">
+                ⏳ Status
+            </a>
+            
+            <!-- Schritt 5: Ergebnisse -->
+            <a href="{{ url_for('results') }}" 
+               class="{% if request.endpoint == 'results' %}active{% endif %}">
+                📈 Ergebnisse
+            </a>
+
+             <!-- Testing -->
+            <a href="{{ url_for('meta_testing') }}" 
+            class="{% if request.endpoint == 'meta_testing' %}active{% endif %}">
+                🔬 Meta Testing
+            </a>
+        </nav>
+
+        <!-- ===== MAIN CONTENT ===== -->
+        <main>
+            {% block content %}{% endblock %}
+        </main>
+
+        <!-- ===== FOOTER ===== -->
+        <footer>
+            <p>© 2025 Betting Agent | Powered by Flask & Stable‑Baselines3</p>
+        </footer>
+    </div>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

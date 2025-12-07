@@ -1,0 +1,67 @@
+# Base Template - wird von Meta-Test überschrieben
+# ✅ EXTENDED mit Fine-Tune Gamedays + Model Ensemble
+
+training:
+  target_season: null  # Wird gesetzt
+  global_seasons:
+    start: null
+    end: null
+  
+  # ✅ NEU: Fine-Tune Gamedays
+  fine_tune_gamedays: null  # 4, 8, 12, oder 16
+  
+  global_timesteps: null
+  finetune_timesteps: null
+  incremental_learning: true
+  incremental_timesteps: 10000
+  
+  # ✅ NEU: Model Ensemble Configuration
+  model_ensemble:
+    enabled: false  # Wird aktiviert falls ensemble_weights gesetzt
+    global_weight: 0.5  # Gewicht des Global Models (0.0 - 1.0)
+    finetune_weight: 0.5  # Gewicht des Fine-Tuned Models (0.0 - 1.0)
+    ensemble_name: "balanced_50"  # Name der Konfiguration
+
+environment:
+  # Wird von Meta-Test überschrieben
+  use_betting_odds: true
+  confidence_threshold: null
+  bet_amount: null
+  max_bet_amount: null
+  min_gameday: 4
+  apply_gameday_filter: false
+  reward_shaping: null
+  no_bet_reward_multiplier: null
+  draw_penalty_multiplier: null
+  min_edge_required: null
+  max_bet_rate: null
+  use_kelly_criterion: null
+  kelly_fraction: null
+  confidence_scaling_mode: null
+
+model:
+  algorithm: "DQN"
+  dqn:
+    learning_rate: null
+    buffer_size: 100000
+    learning_starts: 5000
+    batch_size: 64
+    gamma: 0.95
+    tau: 1.0
+    exploration_fraction: 0.3
+    exploration_initial_eps: 1.0
+    exploration_final_eps: 0.02
+    target_update_interval: 500
+    learning_rate_finetune: 0.00001
+    learning_rate_incremental: 0.000005
+  
+  policy_kwargs:
+    net_arch: [256, 256, 128]
+
+paths:
+  data_dir: "data/processed"
+  raw_data_dir: "data/raw"
+  models_dir: null  # Wird für jeden Run gesetzt
+  results_dir: null
+  logs_dir: null
+  checkpoints_dir: null

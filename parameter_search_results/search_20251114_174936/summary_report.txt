@@ -1,0 +1,64 @@
+================================================================================
+PARAMETER SEARCH SUMMARY REPORT
+================================================================================
+
+Total Experiments: 50
+Successful:        50
+Failed:            0
+
+================================================================================
+PERFORMANCE STATISTICS
+================================================================================
+
+ROI:
+   Mean:   -0.0495
+   Std:    0.0764
+   Min:    -0.1922
+   Max:    0.1432
+
+WINRATE:
+   Mean:   0.4567
+   Std:    0.0424
+   Min:    0.3439
+   Max:    0.5370
+
+SHARPE_RATIO:
+   Mean:   -0.1263
+   Std:    0.1812
+   Min:    -0.5819
+   Max:    0.2780
+
+MAX_DRAWDOWN:
+   Mean:   198.6917
+   Std:    84.5155
+   Min:    66.4000
+   Max:    473.4300
+
+PROFIT_FACTOR:
+   Mean:   0.8830
+   Std:    0.1269
+   Min:    0.6304
+   Max:    1.1951
+
+================================================================================
+BEST CONFIGURATIONS
+================================================================================
+
+BEST OVERALL (Composite Score):
+   Experiment ID: 9
+   Composite Score: 0.2431
+   ROI: 14.32%
+   Winrate: 47.85%
+   Sharpe: 0.28
+
+Parameters:
+   confidence_threshold: 0.65
+   min_edge_required: 0.05
+   max_bet_rate: 0.4
+   max_bet_amount: 10
+   use_kelly_criterion: False
+   kelly_fraction: 0.25
+   no_bet_reward_multiplier: 0.5
+   draw_penalty_multiplier: 1.5
+   global_timesteps: 1000000
+   learning_rate: 0.0001

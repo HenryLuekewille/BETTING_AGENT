@@ -1,0 +1,209 @@
+{% extends "base.html" %}
+
+{% block title %}Training - Betting Agent{% endblock %}
+
+{% block content %}
+
+<div class="card">
+    <h2>⚙️ Training Konfiguration</h2>
+    <p>Wähle zwischen Single-Agent oder Multi-Agent Training.</p>
+</div>
+
+<!-- Training Mode Selection -->
+<div class="training-mode-grid" style="
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 30px;
+    margin-top: 30px;
+">
+    
+    <!-- Single-Agent -->
+    <div class="mode-card">
+        <div class="mode-icon">🎯</div>
+        <h3>Single-Agent Training</h3>
+        <p>
+            Ein spezialisierter Agent mit individueller Konfiguration.
+            Ideal für fokussiertes Training und schnelle Experimente.
+        </p>
+        
+        <div class="features-list">
+            <h4>✅ Vorteile:</h4>
+            <ul>
+                <li>Schnelleres Training (~30-60 Min)</li>
+                <li>Einfachere Konfiguration</li>
+                <li>Direktes Feedback</li>
+                <li>Geringerer Ressourcen-Bedarf</li>
+            </ul>
+        </div>
+        
+        <a href="{{ url_for('single_agent_training') }}" 
+           class="btn-primary btn-large"
+           {% if not data_available %}disabled{% endif %}>
+            Single-Agent konfigurieren →
+        </a>
+    </div>
+    
+    <!-- Multi-Agent -->
+    <div class="mode-card">
+        <div class="mode-icon">🤖</div>
+        <h3>Multi-Agent Training</h3>
+        <p>
+            Mehrere spezialisierte Agenten (Conservative, Balanced, Aggressive) 
+            mit Ensemble-Voting. Robustere Ergebnisse durch Diversifikation.
+        </p>
+        
+        <div class="features-list">
+            <h4>✅ Vorteile:</h4>
+            <ul>
+                <li>Höhere Robustheit</li>
+                <li>Ensemble-Entscheidungen</li>
+                <li>Diversifizierte Strategien</li>
+                <li>Reduzierte Einzelfehler</li>
+            </ul>
+            
+            <h4>⚠️ Nachteile:</h4>
+            <ul>
+                <li>Längeres Training (~2-3x länger)</li>
+                <li>Komplexere Konfiguration</li>
+                <li>Höherer Ressourcen-Bedarf</li>
+            </ul>
+        </div>
+        
+        <a href="{{ url_for('multi_agent_config') }}" 
+           class="btn-primary btn-large"
+           {% if not data_available %}disabled{% endif %}>
+            Multi-Agent konfigurieren →
+        </a>
+    </div>
+    
+</div>
+
+<!-- Info Box -->
+{% if not data_available %}
+<div class="alert alert-warning" style="margin-top: 40px;">
+    <strong>⚠️ Keine Daten vorhanden!</strong>
+    <p>Bitte zuerst Daten herunterladen und verarbeiten.</p>
+    <a href="{{ url_for('data_management') }}" class="btn-primary">
+        → Zur Datenverwaltung
+    </a>
+</div>
+{% endif %}
+
+<!-- Comparison Table -->
+<div class="card" style="margin-top: 40px;">
+    <h2>📊 Vergleich: Single vs. Multi-Agent</h2>
+    
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Merkmal</th>
+                    <th>Single-Agent</th>
+                    <th>Multi-Agent</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Training Time</strong></td>
+                    <td><span class="badge success">~30-60 Min</span></td>
+                    <td><span class="badge warning">~90-180 Min</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Anzahl Modelle</strong></td>
+                    <td>1 Agent</td>
+                    <td>3 Agenten (Conservative, Balanced, Aggressive)</td>
+                </tr>
+                <tr>
+                    <td><strong>Entscheidung</strong></td>
+                    <td>Direkt vom Agent</td>
+                    <td>Ensemble-Voting</td>
+                </tr>
+                <tr>
+                    <td><strong>Robustheit</strong></td>
+                    <td>Mittel</td>
+                    <td><span class="badge success">Hoch</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Anpassbarkeit</strong></td>
+                    <td><span class="badge success">Hoch</span></td>
+                    <td>Mittel (Profile vordefiniert)</td>
+                </tr>
+                <tr>
+                    <td><strong>Komplexität</strong></td>
+                    <td><span class="badge success">Niedrig</span></td>
+                    <td>Höher</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<style>
+.training-mode-grid {
+    margin-bottom: 40px;
+}
+
+.mode-card {
+    background: var(--bg-card);
+    padding: 40px;
+    border-radius: 12px;
+    border: 2px solid var(--border);
+    transition: all 0.3s ease;
+}
+
+.mode-card:hover {
+    border-color: var(--primary);
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(37, 99, 235, 0.3);
+}
+
+.mode-icon {
+    font-size: 4em;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.mode-card h3 {
+    color: var(--primary-light);
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 1.8em;
+}
+
+.mode-card > p {
+    text-align: center;
+    color: var(--text-secondary);
+    margin-bottom: 30px;
+    line-height: 1.7;
+}
+
+.features-list {
+    background: rgba(37, 99, 235, 0.05);
+    padding: 20px;
+    border-radius: 8px;
+    margin: 30px 0;
+}
+
+.features-list h4 {
+    color: var(--text-primary);
+    margin-bottom: 10px;
+    font-size: 1.1em;
+}
+
+.features-list ul {
+    margin-left: 20px;
+    line-height: 1.8;
+}
+
+.features-list ul li {
+    margin-bottom: 8px;
+}
+
+.btn-large {
+    display: block;
+    padding: 15px 30px;
+    font-size: 1.1em;
+}
+</style>
+
+{% endblock %}

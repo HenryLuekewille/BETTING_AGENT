@@ -1,0 +1,22 @@
+name: "Aggressive"
+emoji: "⚡"
+description: "Fokus auf Value und viele Wetten"
+
+training:
+  target_season: 2024
+  fine_tune_gamedays: 8  # ← Weniger Fine-Tuning für aggressiv
+  global_timesteps: 1500000  # ← Mehr Training für aggressiv
+  finetune_timesteps: 150000
+  incremental_learning: true
+
+environment:
+  confidence_threshold: 0.55
+  min_edge_required: 0.02
+  max_bet_rate: 0.45
+  bet_amount: 10.0
+  max_bet_amount: 50.0
+  use_kelly_criterion: true
+  kelly_fraction: 0.35
+  reward_shaping: "aggressive"
+  no_bet_reward_multiplier: 0.3
+  draw_penalty_multiplier: 1.2

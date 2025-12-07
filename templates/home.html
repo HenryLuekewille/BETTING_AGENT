@@ -1,0 +1,265 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Betting Agent{% endblock %}
+
+{% block content %}
+
+<!-- Hero Section -->
+<div class="hero-section" style="
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+    padding: 60px 40px;
+    border-radius: 16px;
+    margin-bottom: 40px;
+    text-align: center;
+    border: 2px solid var(--primary);
+">
+    <h1 style="font-size: 3em; margin-bottom: 20px;">
+        🤖 Betting Agent
+    </h1>
+    <p style="font-size: 1.3em; color: var(--text-secondary);">
+        Deep Reinforcement Learning für Sportwetten-Vorhersagen
+    </p>
+</div>
+
+<!-- Workflow Steps -->
+<div class="workflow-grid" style="
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
+    margin-top: 40px;
+">
+    
+    <!-- Step 1: Daten -->
+    <div class="workflow-card">
+        <div class="step-number">1</div>
+        <div class="step-icon">📊</div>
+        <h3>Daten bereitstellen</h3>
+        <p>Lade Bundesliga-Daten herunter und verarbeite sie für das Training.</p>
+        <a href="{{ url_for('data_management') }}" class="btn-primary">
+            Zu den Daten →
+        </a>
+        <div class="status-badge">
+            {% if data_available %}
+                <span class="badge success">✅ Bereit</span>
+            {% else %}
+                <span class="badge warning">⚠️ Nicht verfügbar</span>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Step 2: Model -->
+    <div class="workflow-card">
+        <div class="step-number">2</div>
+        <div class="step-icon">🧠</div>
+        <h3>Model verstehen</h3>
+        <p>Lerne, wie das DQN-Model arbeitet und welche Features es nutzt.</p>
+        <a href="{{ url_for('model_info') }}" class="btn-primary">
+            Model erkunden →
+        </a>
+        <div class="info-text">
+            {{ feature_count }} Features | DQN Algorithmus
+        </div>
+    </div>
+    
+    <!-- Step 3: Training -->
+    <div class="workflow-card">
+        <div class="step-number">3</div>
+        <div class="step-icon">⚙️</div>
+        <h3>Training starten</h3>
+        <p>Wähle zwischen Single-Agent oder Multi-Agent Training.</p>
+        <a href="{{ url_for('training_config') }}" class="btn-primary" 
+           {% if not data_available %}disabled{% endif %}>
+            Training konfigurieren →
+        </a>
+        <div class="info-text">
+            Single-Agent | Multi-Agent
+        </div>
+    </div>
+    
+    <!-- Step 4: Ergebnisse -->
+    <div class="workflow-card">
+        <div class="step-number">4</div>
+        <div class="step-icon">📈</div>
+        <h3>Ergebnisse analysieren</h3>
+        <p>Betrachte Performance-Metriken und Excel-Reports.</p>
+        <a href="{{ url_for('results') }}" class="btn-primary">
+            Ergebnisse ansehen →
+        </a>
+        <div class="status-badge">
+            {% if runs %}
+                <span class="badge success">{{ runs|length }} Runs</span>
+            {% else %}
+                <span class="badge warning">Keine Runs</span>
+            {% endif %}
+        </div>
+    </div>
+    
+</div>
+
+<!-- Quick Actions -->
+<div class="card" style="margin-top: 50px;">
+    <h2>🚀 Schnellstart</h2>
+    
+    {% if not data_available %}
+        <div class="alert alert-warning">
+            <strong>⚠️ Noch keine Daten vorhanden</strong>
+            <p>Starte mit dem Download und der Verarbeitung der Daten.</p>
+            <a href="{{ url_for('data_management') }}" class="btn-primary">
+                → Daten herunterladen
+            </a>
+        </div>
+    {% elif training_running %}
+        <div class="alert alert-info">
+            <strong>⏳ Training läuft gerade</strong>
+            <p>Ein Training ist bereits aktiv.</p>
+            <a href="{{ url_for('status') }}" class="btn-primary">
+                → Status ansehen
+            </a>
+        </div>
+    {% else %}
+        <div class="alert alert-success">
+            <strong>✅ Bereit für Training</strong>
+            <p>Alle Daten sind verfügbar. Du kannst jetzt ein Training starten!</p>
+            <div class="button-group">
+                <a href="{{ url_for('single_agent_training') }}" class="btn-primary">
+                    🎯 Single-Agent Training
+                </a>
+                <a href="{{ url_for('multi_agent_config') }}" class="btn-secondary">
+                    🤖 Multi-Agent Training
+                </a>
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+<!-- Recent Runs -->
+{% if runs %}
+<div class="card" style="margin-top: 30px;">
+    <h2>📜 Letzte Training-Runs</h2>
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Zeitstempel</th>
+                    <th>Saison</th>
+                    <th>Typ</th>
+                    <th>Status</th>
+                    <th>Aktion</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for run in runs[:5] %}
+                <tr>
+                    <td>{{ run.timestamp[:8] }} {{ run.timestamp[9:15] }}</td>
+                    <td>{{ run.season }}</td>
+                    <td>
+                        {% if 'multi' in run.id %}
+                            <span class="badge info">🤖 Multi-Agent</span>
+                        {% else %}
+                            <span class="badge">🎯 Single-Agent</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if run.has_results %}
+                            <span class="badge success">✅ Fertig</span>
+                        {% else %}
+                            <span class="badge warning">⏳ Läuft</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if run.has_results %}
+                            <a href="{{ url_for('results') }}?run={{ run.id }}" 
+                               class="btn-small">
+                                📊 Ansehen
+                            </a>
+                        {% else %}
+                            <a href="{{ url_for('status') }}" class="btn-small">
+                                ⏳ Status
+                            </a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    {% if runs|length > 5 %}
+    <p style="text-align: center; margin-top: 20px;">
+        <a href="{{ url_for('results') }}" class="btn-secondary">
+            Alle {{ runs|length }} Runs ansehen →
+        </a>
+    </p>
+    {% endif %}
+</div>
+{% endif %}
+
+<style>
+.workflow-card {
+    background: var(--bg-card);
+    padding: 30px;
+    border-radius: 12px;
+    text-align: center;
+    border: 2px solid var(--border);
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.workflow-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--primary);
+    box-shadow: 0 10px 30px rgba(37, 99, 235, 0.3);
+}
+
+.step-number {
+    position: absolute;
+    top: -15px;
+    left: 20px;
+    width: 40px;
+    height: 40px;
+    background: var(--primary);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5em;
+    font-weight: 700;
+    border: 3px solid var(--bg-dark);
+}
+
+.step-icon {
+    font-size: 4em;
+    margin: 20px 0;
+}
+
+.workflow-card h3 {
+    color: var(--primary-light);
+    margin-bottom: 15px;
+    font-size: 1.4em;
+}
+
+.workflow-card p {
+    color: var(--text-secondary);
+    margin-bottom: 25px;
+    line-height: 1.6;
+}
+
+.workflow-card .btn-primary {
+    display: inline-block;
+    margin-top: 15px;
+}
+
+.status-badge, .info-text {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+}
+
+.info-text {
+    color: var(--text-muted);
+    font-size: 0.9em;
+}
+</style>
+
+{% endblock %}

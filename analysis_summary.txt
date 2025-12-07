@@ -1,0 +1,435 @@
+================================================================================
+BETTING AGENT - TRAINING RESULTS SUMMARY
+================================================================================
+
+Generated: 2025-11-22 19:02:08
+
+
+================================================================================
+SINGLE TRAINING RUNS
+================================================================================
+
+
+────────────────────────────────────────────────────────────────────────────────
+Run: run_20251110_152117
+────────────────────────────────────────────────────────────────────────────────
+
+CONFIGURATION:
+  Target Season:        2024
+  Confidence Threshold: 0.8
+  Min Edge:             0.02
+  Max Bet Rate:         0.6
+  Use Kelly:            True
+  Kelly Fraction:       N/A
+  Reward Shaping:       conservative
+
+EVALUATION RESULTS:
+  Final ROI:              -22.62%
+  Final Winrate:           36.89%
+  Total Bets:                103
+  Total Wins:                 38
+  Total Profit:          -233.00€
+  Final Balance:            0.00€
+  Sharpe Ratio:            -0.51
+  Max Drawdown:           238.90€
+  Gamedays Played:            22
+
+FILES:
+  Excel:   evaluation_2024_20251110_161715.xlsx
+  Models:  global_model_2024.zip, finetuned_model_2024.zip
+  CSVs:    1 files
+
+
+────────────────────────────────────────────────────────────────────────────────
+Run: run_20251110_122430
+────────────────────────────────────────────────────────────────────────────────
+
+CONFIGURATION:
+  Target Season:        2024
+  Confidence Threshold: 0.6
+  Min Edge:             N/A
+  Max Bet Rate:         N/A
+  Use Kelly:            N/A
+  Kelly Fraction:       N/A
+  Reward Shaping:       roi
+
+FILES:
+
+
+────────────────────────────────────────────────────────────────────────────────
+Run: run_20251114_150115
+────────────────────────────────────────────────────────────────────────────────
+
+CONFIGURATION:
+  Target Season:        2024
+  Confidence Threshold: 0.6
+  Min Edge:             0.02
+  Max Bet Rate:         0.4
+  Use Kelly:            True
+  Kelly Fraction:       0.25
+  Reward Shaping:       conservative
+
+EVALUATION RESULTS:
+  Final ROI:                7.48%
+  Final Winrate:           42.17%
+  Total Bets:                166
+  Total Wins:                 70
+  Total Profit:           124.10€
+  Final Balance:            0.00€
+  Sharpe Ratio:             0.12
+  Max Drawdown:           155.50€
+  Gamedays Played:            26
+
+FILES:
+  Excel:   evaluation_2024_20251114_154034.xlsx
+  Models:  global_model_2024.zip, finetuned_model_2024.zip
+  CSVs:    1 files
+
+
+────────────────────────────────────────────────────────────────────────────────
+Run: run_20251114_173707
+────────────────────────────────────────────────────────────────────────────────
+
+CONFIGURATION:
+  Target Season:        2024
+  Confidence Threshold: 0.6
+  Min Edge:             0.05
+  Max Bet Rate:         0.3
+  Use Kelly:            True
+  Kelly Fraction:       0.25
+  Reward Shaping:       conservative
+
+FILES:
+
+
+────────────────────────────────────────────────────────────────────────────────
+Run: run_20251110_125507
+────────────────────────────────────────────────────────────────────────────────
+
+CONFIGURATION:
+  Target Season:        2024
+  Confidence Threshold: 0.6
+  Min Edge:             N/A
+  Max Bet Rate:         N/A
+  Use Kelly:            N/A
+  Kelly Fraction:       N/A
+  Reward Shaping:       roi
+
+EVALUATION RESULTS:
+  Final ROI:              -13.50%
+  Final Winrate:           45.45%
+  Total Bets:                209
+  Total Wins:                 95
+  Total Profit:          -282.10€
+  Final Balance:            0.00€
+  Sharpe Ratio:            -0.36
+  Max Drawdown:           335.60€
+  Gamedays Played:            25
+
+FILES:
+  Excel:   evaluation_2024_20251110_131421.xlsx
+  Models:  global_model_2024.zip, finetuned_model_2024.zip
+  CSVs:    1 files
+
+
+────────────────────────────────────────────────────────────────────────────────
+Run: run_20251111_065542
+────────────────────────────────────────────────────────────────────────────────
+
+CONFIGURATION:
+  Target Season:        2024
+  Confidence Threshold: 0.7
+  Min Edge:             0.02
+  Max Bet Rate:         0.5
+  Use Kelly:            True
+  Kelly Fraction:       N/A
+  Reward Shaping:       conservative
+
+EVALUATION RESULTS:
+  Final ROI:              -19.35%
+  Final Winrate:           33.76%
+  Total Bets:                157
+  Total Wins:                 53
+  Total Profit:          -303.80€
+  Final Balance:            0.00€
+  Sharpe Ratio:            -0.32
+  Max Drawdown:           291.30€
+  Gamedays Played:            22
+
+FILES:
+  Excel:   evaluation_2024_20251111_073011.xlsx
+  Models:  global_model_2024.zip, finetuned_model_2024.zip
+  CSVs:    1 files
+
+
+────────────────────────────────────────────────────────────────────────────────
+Run: run_20251110_124123
+────────────────────────────────────────────────────────────────────────────────
+
+CONFIGURATION:
+  Target Season:        2024
+  Confidence Threshold: 0.6
+  Min Edge:             N/A
+  Max Bet Rate:         N/A
+  Use Kelly:            N/A
+  Kelly Fraction:       N/A
+  Reward Shaping:       roi
+
+FILES:
+
+
+────────────────────────────────────────────────────────────────────────────────
+Run: run_20251110_133916
+────────────────────────────────────────────────────────────────────────────────
+
+CONFIGURATION:
+  Target Season:        2024
+  Confidence Threshold: 0.7
+  Min Edge:             0.05
+  Max Bet Rate:         0.3
+  Use Kelly:            True
+  Kelly Fraction:       N/A
+  Reward Shaping:       conservative
+
+FILES:
+
+
+────────────────────────────────────────────────────────────────────────────────
+Run: run_20251115_154237
+────────────────────────────────────────────────────────────────────────────────
+
+CONFIGURATION:
+  Target Season:        2025
+  Confidence Threshold: 0.6
+  Min Edge:             0.05
+  Max Bet Rate:         0.3
+  Use Kelly:            True
+  Kelly Fraction:       0.25
+  Reward Shaping:       conservative
+
+EVALUATION RESULTS:
+  Final ROI:               17.27%
+  Final Winrate:           69.23%
+  Total Bets:                 13
+  Total Wins:                  9
+  Total Profit:            23.87€
+  Final Balance:            0.00€
+  Sharpe Ratio:            83.55
+  Max Drawdown:             0.00€
+  Gamedays Played:             2
+
+FILES:
+  Excel:   evaluation_2025_20251115_164715.xlsx
+  Models:  global_model_2025.zip, finetuned_model_2025.zip
+  CSVs:    1 files
+
+
+────────────────────────────────────────────────────────────────────────────────
+Run: run_20251110_134354
+────────────────────────────────────────────────────────────────────────────────
+
+CONFIGURATION:
+  Target Season:        2024
+  Confidence Threshold: 0.7
+  Min Edge:             0.05
+  Max Bet Rate:         0.3
+  Use Kelly:            True
+  Kelly Fraction:       N/A
+  Reward Shaping:       conservative
+
+FILES:
+
+
+────────────────────────────────────────────────────────────────────────────────
+Run: run_20251110_123541
+────────────────────────────────────────────────────────────────────────────────
+
+CONFIGURATION:
+  Target Season:        2024
+  Confidence Threshold: 0.6
+  Min Edge:             N/A
+  Max Bet Rate:         N/A
+  Use Kelly:            N/A
+  Kelly Fraction:       N/A
+  Reward Shaping:       roi
+
+FILES:
+
+
+────────────────────────────────────────────────────────────────────────────────
+Run: run_20251114_145922
+────────────────────────────────────────────────────────────────────────────────
+
+CONFIGURATION:
+  Target Season:        2024
+  Confidence Threshold: 0.6
+  Min Edge:             0.02
+  Max Bet Rate:         0.4
+  Use Kelly:            True
+  Kelly Fraction:       0.25
+  Reward Shaping:       conservative
+
+FILES:
+
+
+────────────────────────────────────────────────────────────────────────────────
+Run: run_20251110_142609
+────────────────────────────────────────────────────────────────────────────────
+
+CONFIGURATION:
+  Target Season:        2024
+  Confidence Threshold: 0.8
+  Min Edge:             0.02
+  Max Bet Rate:         0.6
+  Use Kelly:            True
+  Kelly Fraction:       N/A
+  Reward Shaping:       conservative
+
+FILES:
+
+
+────────────────────────────────────────────────────────────────────────────────
+Run: run_20251110_134627
+────────────────────────────────────────────────────────────────────────────────
+
+CONFIGURATION:
+  Target Season:        2024
+  Confidence Threshold: 0.7
+  Min Edge:             0.05
+  Max Bet Rate:         0.3
+  Use Kelly:            True
+  Kelly Fraction:       N/A
+  Reward Shaping:       conservative
+
+FILES:
+
+
+────────────────────────────────────────────────────────────────────────────────
+Run: run_20251110_123653
+────────────────────────────────────────────────────────────────────────────────
+
+CONFIGURATION:
+  Target Season:        2024
+  Confidence Threshold: 0.6
+  Min Edge:             N/A
+  Max Bet Rate:         N/A
+  Use Kelly:            N/A
+  Kelly Fraction:       N/A
+  Reward Shaping:       roi
+
+FILES:
+
+
+────────────────────────────────────────────────────────────────────────────────
+Run: run_20251114_164724
+────────────────────────────────────────────────────────────────────────────────
+
+CONFIGURATION:
+  Target Season:        2024
+  Confidence Threshold: 0.6
+  Min Edge:             0.02
+  Max Bet Rate:         0.4
+  Use Kelly:            True
+  Kelly Fraction:       0.25
+  Reward Shaping:       conservative
+
+EVALUATION RESULTS:
+  Final ROI:              -11.75%
+  Final Winrate:           56.45%
+  Total Bets:                 62
+  Total Wins:                 35
+  Total Profit:           -82.24€
+  Final Balance:            0.00€
+  Sharpe Ratio:            -0.24
+  Max Drawdown:            88.47€
+  Gamedays Played:            26
+
+FILES:
+  Excel:   evaluation_2024_20251114_172509.xlsx
+  Models:  global_model_2024.zip, finetuned_model_2024.zip
+  CSVs:    1 files
+
+
+────────────────────────────────────────────────────────────────────────────────
+Run: run_20251110_135340
+────────────────────────────────────────────────────────────────────────────────
+
+CONFIGURATION:
+  Target Season:        2024
+  Confidence Threshold: 0.7
+  Min Edge:             0.05
+  Max Bet Rate:         0.3
+  Use Kelly:            True
+  Kelly Fraction:       N/A
+  Reward Shaping:       conservative
+
+EVALUATION RESULTS:
+  Final ROI:              -24.34%
+  Final Winrate:           44.74%
+  Total Bets:                 76
+  Total Wins:                 34
+  Total Profit:          -185.00€
+  Final Balance:            0.00€
+  Sharpe Ratio:            -0.43
+  Max Drawdown:           211.10€
+  Gamedays Played:            25
+
+FILES:
+  Excel:   evaluation_2024_20251110_141241.xlsx
+  Models:  global_model_2024.zip, finetuned_model_2024.zip
+  CSVs:    1 files
+
+
+────────────────────────────────────────────────────────────────────────────────
+Run: run_20251115_174959
+────────────────────────────────────────────────────────────────────────────────
+
+CONFIGURATION:
+  Target Season:        2024
+  Confidence Threshold: 0.6
+  Min Edge:             0.05
+  Max Bet Rate:         0.5
+  Use Kelly:            True
+  Kelly Fraction:       0.5
+  Reward Shaping:       conservative
+
+FILES:
+  Models:  global_model_2024.zip, finetuned_model_2024.zip
+
+
+────────────────────────────────────────────────────────────────────────────────
+Run: run_20251110_150007
+────────────────────────────────────────────────────────────────────────────────
+
+CONFIGURATION:
+  Target Season:        2024
+  Confidence Threshold: 0.6
+  Min Edge:             0.02
+  Max Bet Rate:         0.6
+  Use Kelly:            True
+  Kelly Fraction:       N/A
+  Reward Shaping:       conservative
+
+EVALUATION RESULTS:
+  Final ROI:               -3.01%
+  Final Winrate:           47.68%
+  Total Bets:                151
+  Total Wins:                 72
+  Total Profit:           -45.40€
+  Final Balance:            0.00€
+  Sharpe Ratio:            -0.06
+  Max Drawdown:           167.20€
+  Gamedays Played:            25
+
+FILES:
+  Excel:   evaluation_2024_20251110_151926.xlsx
+  Models:  global_model_2024.zip, finetuned_model_2024.zip
+  CSVs:    1 files
+
+
+================================================================================
+META-TEST RESULTS
+================================================================================
+
+❌ Keine Meta-Tests gefunden
+
